@@ -7,6 +7,8 @@ import CreatorProfile from "./pages/creator/CreatorProfile"
 import BrowseCampaigns from "./pages/creator/BrowseCampaigns"
 import CampaignDetails from "./pages/creator/CampaignDetails"
 import Applications from "./pages/creator/Applications"
+import ShopPage from "./pages/tokens/ShopPage"
+import AdminDashboard from "./pages/admin/AdminDashboard"
 
 export default function AppRoutes() {
   return (
@@ -20,6 +22,8 @@ export default function AppRoutes() {
         <Route path="/creator/campaigns" element={<BrowseCampaigns />} />
         <Route path="/creator/campaign/:id" element={<CampaignDetails />} />
         <Route path="/creator/applications" element={<Applications />} />
+        <Route path="/user/shop" element={<ShopPage/>}/>
+        <Route path="/admin/admindashboard" element={<AdminDashboard/>}/>
       </Routes>
     </BrowserRouter>
   )
