@@ -1,33 +1,51 @@
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  return (
-    <header className="w-full border-b bg-white">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+  const [scrolled, setScrolled] = useState(false);
 
-        {/* LOGO */}
-        <Link to="/" className="text-2xl font-bold text-indigo-600">
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <nav
+      className={`
+        fixed top-0 left-0 w-full z-50
+        transition-all duration-300
+        ${
+          scrolled
+            ? "bg-white/90 backdrop-blur-md shadow-md border-b border-[#e1e1eb]"
+            : "bg-transparent"
+        }
+      `}
+    >
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="text-lg font-semibold text-[#393873]">
           SponzaMe
         </Link>
 
-        {/* NAV LINKS */}
-        <nav className="space-x-6">
+        {/* Links */}
+        <div className="flex items-center gap-6 text-sm">
           <Link
             to="/login"
-            className="text-gray-600 hover:text-indigo-600"
+            className="text-gray-600 hover:text-[#5157a1] transition"
           >
             Login
           </Link>
-
           <Link
             to="/signup"
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            className="px-4 py-2 rounded-lg bg-[#5157a1] text-white hover:bg-[#393873] transition"
           >
             Sign Up
           </Link>
-        </nav>
-
+        </div>
       </div>
-    </header>
-  )
+    </nav>
+  );
 }
