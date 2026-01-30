@@ -50,7 +50,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="bg-white text-gray-900 overflow-hidden pt-16">
+    <div className="bg-white text-gray-900 overflow-hidden">
       <Navbar />
 
       {/* HERO */}
