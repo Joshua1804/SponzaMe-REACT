@@ -41,20 +41,20 @@ export default function CreatorDashboard() {
   }, []);
 
   const applications = [
-    { campaign: "Tech Product Review", status: "Pending", budget: "₹15,000", statusColor: "yellow" },
-    { campaign: "Gaming Accessories Promotion", status: "Accepted", budget: "₹25,000", statusColor: "green" },
-    { campaign: "Mobile App Launch", status: "Rejected", budget: "₹10,000", statusColor: "red" },
+    { id: 1, campaign: "Tech Product Review", status: "Pending", budget: "₹15,000", statusColor: "yellow" },
+    { id: 2, campaign: "Gaming Accessories Promotion", status: "Accepted", budget: "₹25,000", statusColor: "green" },
+    { id: 3, campaign: "Mobile App Launch", status: "Rejected", budget: "₹10,000", statusColor: "red" },
   ];
 
   const quickStats = [
-    { label: "Applications", value: "12", icon: "📋", color: "from-[#c7eff9] to-[#5157a1]/20" },
-    { label: "Active Deals", value: "3", icon: "🤝", color: "from-[#e7bdd3] to-[#5157a1]/20" },
-    { label: "Earnings", value: "₹45K", icon: "💰", color: "from-[#c7eff9] to-[#e7bdd3]" },
-    { label: "Profile Views", value: "256", icon: "👁️", color: "from-[#5157a1]/20 to-[#c7eff9]" },
+    { label: "Applications", value: "12", icon: "📋", color: "from-[#c7eff9] to-[#5157a1]/20", link: "/creator/applications" },
+    { label: "Active Deals", value: "3", icon: "🤝", color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/creator/applications?filter=accepted" },
+    { label: "Earnings", value: "₹45K", icon: "💰", color: "from-[#c7eff9] to-[#e7bdd3]", link: "#" },
+    { label: "Profile Views", value: "256", icon: "👁️", color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/creator/profile" },
   ];
 
   return (
-    <div className="pt-16 bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <Navbar />
 
       {/* Hero Header */}
@@ -85,18 +85,24 @@ export default function CreatorDashboard() {
                 </p>
               </div>
 
-              {/* Token Balance Card */}
-              <div className="reveal delay-1 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 px-6 py-5 min-w-[200px]">
+              {/* Token Balance Card - Clickable */}
+              <Link
+                to="/creator/tokens"
+                className="reveal delay-1 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 px-6 py-5 min-w-[200px] transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-xl cursor-pointer group"
+              >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform">
                     🪙
                   </div>
                   <div>
                     <p className="text-sm text-white/70">Token Balance</p>
                     <p className="text-3xl font-bold text-white">{tokenBalance}</p>
                   </div>
+                  <svg className="w-5 h-5 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -107,9 +113,10 @@ export default function CreatorDashboard() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {quickStats.map((stat, i) => (
-              <div
+              <Link
+                to={stat.link}
                 key={i}
-                className={`reveal delay-${i + 1} group bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+                className={`reveal delay-${i + 1} group bg-white rounded-2xl p-5 shadow-lg shadow-gray-100/50 border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-[#5157a1]/30`}
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl transition-transform group-hover:scale-110`}>
@@ -120,7 +127,7 @@ export default function CreatorDashboard() {
                     <p className="text-2xl font-bold text-[#393873]">{stat.value}</p>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -173,17 +180,23 @@ export default function CreatorDashboard() {
                 </div>
               </div>
 
-              <button className="w-full py-3 rounded-xl border-2 border-[#5157a1] text-[#5157a1] font-semibold transition-all duration-300 hover:bg-[#5157a1] hover:text-white">
-                Edit Profile
-              </button>
+              <Link
+                to="/creator/profile"
+                className="block w-full py-3 rounded-xl border-2 border-[#5157a1] text-[#5157a1] font-semibold text-center transition-all duration-300 hover:bg-[#5157a1] hover:text-white"
+              >
+                View Profile
+              </Link>
             </div>
 
             {/* Applications Card */}
             <div className="reveal delay-1 lg:col-span-2 bg-white rounded-3xl shadow-lg shadow-gray-100/50 border border-gray-100 p-6 lg:p-8 transition-all duration-300 hover:shadow-xl">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900">Applied Campaigns</h2>
-                <Link to="/creator/campaigns" className="text-sm font-medium text-[#5157a1] hover:underline">
-                  View All →
+                <Link to="/creator/applications" className="text-sm font-medium text-[#5157a1] hover:underline flex items-center gap-1">
+                  View All
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </div>
 
@@ -204,8 +217,8 @@ export default function CreatorDashboard() {
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${i === 0 ? 'from-blue-100 to-blue-200' :
-                                i === 1 ? 'from-purple-100 to-purple-200' :
-                                  'from-pink-100 to-pink-200'
+                              i === 1 ? 'from-purple-100 to-purple-200' :
+                                'from-pink-100 to-pink-200'
                               } flex items-center justify-center`}>
                               {i === 0 ? '📱' : i === 1 ? '🎮' : '📲'}
                             </div>
@@ -214,12 +227,12 @@ export default function CreatorDashboard() {
                         </td>
                         <td className="py-4 px-4">
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${app.statusColor === 'yellow' ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
-                              app.statusColor === 'green' ? 'bg-green-50 text-green-700 border border-green-200' :
-                                'bg-red-50 text-red-700 border border-red-200'
+                            app.statusColor === 'green' ? 'bg-green-50 text-green-700 border border-green-200' :
+                              'bg-red-50 text-red-700 border border-red-200'
                             }`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${app.statusColor === 'yellow' ? 'bg-yellow-500' :
-                                app.statusColor === 'green' ? 'bg-green-500' :
-                                  'bg-red-500'
+                              app.statusColor === 'green' ? 'bg-green-500' :
+                                'bg-red-500'
                               }`}></span>
                             {app.status}
                           </span>
@@ -228,9 +241,12 @@ export default function CreatorDashboard() {
                           <span className="font-semibold text-gray-900">{app.budget}</span>
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <button className="text-[#5157a1] hover:text-[#393873] font-medium text-sm transition-colors">
+                          <Link
+                            to={`/creator/campaign/${app.id}`}
+                            className="text-[#5157a1] hover:text-[#393873] font-medium text-sm transition-colors"
+                          >
                             View Details
-                          </button>
+                          </Link>
                         </td>
                       </tr>
                     ))}
@@ -243,12 +259,13 @@ export default function CreatorDashboard() {
           {/* Quick Actions */}
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: "Browse Campaigns", desc: "Find new opportunities", icon: "🔍", color: "from-[#c7eff9] to-[#5157a1]/30" },
-              { title: "Update Portfolio", desc: "Showcase your work", icon: "🎨", color: "from-[#e7bdd3] to-[#5157a1]/30" },
-              { title: "Messages", desc: "2 unread messages", icon: "💬", color: "from-[#5157a1]/20 to-[#c7eff9]" },
-              { title: "Earnings", desc: "View payment history", icon: "💵", color: "from-[#c7eff9] to-[#e7bdd3]" },
+              { title: "Browse Campaigns", desc: "Find new opportunities", icon: "🔍", color: "from-[#c7eff9] to-[#5157a1]/30", link: "/creator/campaigns" },
+              { title: "My Applications", desc: "Track your applications", icon: "📄", color: "from-[#e7bdd3] to-[#5157a1]/30", link: "/creator/applications" },
+              { title: "Token Usage", desc: "View token history", icon: "🪙", color: "from-amber-100 to-orange-200", link: "/creator/tokens" },
+              { title: "Buy Tokens", desc: "Get more tokens", icon: "🛒", color: "from-[#c7eff9] to-[#e7bdd3]", link: "/user/shop" },
             ].map((action, i) => (
-              <button
+              <Link
+                to={action.link}
                 key={i}
                 className={`reveal delay-${i + 1} group text-left bg-white rounded-2xl p-5 shadow-md shadow-gray-100/50 border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[#5157a1]/30`}
               >
@@ -257,7 +274,7 @@ export default function CreatorDashboard() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
                 <p className="text-sm text-gray-500">{action.desc}</p>
-              </button>
+              </Link>
             ))}
           </div>
         </div>

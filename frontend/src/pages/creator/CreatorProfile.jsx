@@ -227,7 +227,7 @@ export default function CreatorProfile() {
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="space-y-3">
                   {[
-                    { label: "Browse Campaigns", icon: "🔍", link: "/creator/browse", color: "from-blue-500 to-indigo-500" },
+                    { label: "Browse Campaigns", icon: "🔍", link: "/creator/campaigns", color: "from-blue-500 to-indigo-500" },
                     { label: "My Applications", icon: "📄", link: "/creator/applications", color: "from-purple-500 to-pink-500" },
                     { label: "Dashboard", icon: "📊", link: "/creator/dashboard", color: "from-emerald-500 to-teal-500" },
                     { label: "Settings", icon: "⚙️", link: "#", color: "from-gray-500 to-gray-600" },
