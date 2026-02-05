@@ -17,7 +17,6 @@ export default function Login() {
     reveals.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
-
   return (
     <div className="min-h-screen bg-[#fafbff] selection:bg-[#5157a1] selection:text-white">
       <Navbar />
@@ -29,7 +28,7 @@ export default function Login() {
 
         <div className="relative w-full max-w-6xl reveal">
           <div className="bg-white/70 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden border border-white/40 flex flex-col md:flex-row">
-            
+
             {/* LEFT SIDE: FORM */}
             <div className="w-full md:w-[45%] p-12 lg:p-20 flex flex-col justify-center">
               <div className="reveal delay-1">
