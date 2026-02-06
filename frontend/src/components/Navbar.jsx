@@ -46,9 +46,11 @@ export default function Navbar() {
               to="/"
               className="group flex items-center gap-2 text-xl lg:text-2xl font-bold text-[#393873] transition-all duration-300 hover:scale-105"
             >
-              <span className="bg-gradient-to-r from-[#5157a1] to-[#393873] bg-clip-text text-transparent">
-                SponzaMe
-              </span>
+              <object
+                data="SponzaMe-Logo.svg"
+                alt="SponzaMe Logo"
+                className="h-8   w-auto object-contain"
+              />
             </Link>
 
             {/* Desktop Navigation Links */}
