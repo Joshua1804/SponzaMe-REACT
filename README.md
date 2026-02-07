@@ -2,9 +2,6 @@
 
 SponzaMe is a structured sponsorship marketplace that connects content creators with brands seeking authentic partnerships. The platform empowers creators to build their profiles, discover opportunities, and manage campaigns—all in one place.
 
-![SponzaMe Splash Screen](https://raw.githubusercontent.com/joshuaphilip/SponzaMe-React/main/frontend/public/splash_screen_demo.webp)
-_(Note: Replace the image link with your own hosting if needed)_
-
 ## 🚀 Deployed Link
 
 **[https://sponza-me-react.vercel.app/]**
@@ -22,7 +19,7 @@ Follow these steps to set up the project locally on your machine.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/sponzame-react.git
+git clone https://github.com/Joshua1804/SponzaMe-REACT.git
 cd sponzame-react
 ```
 
