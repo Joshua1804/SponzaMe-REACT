@@ -13,6 +13,13 @@ import TokenUsage from "./pages/creator/TokenUsage"
 import ShopPage from "./pages/tokens/ShopPage"
 import TokenCheckout from "./pages/tokens/TokenCheckout"
 import AdminDashboard from "./pages/admin/AdminDashboard"
+import BrowseCreators from "./pages/sponsor/BrowseCreators"
+import SponsorDashboard from "./pages/sponsor/SponsorDashboard"
+import SponsorProfile from "./pages/sponsor/SponsorProfile"
+import CreatorDetails from "./pages/sponsor/CreatorDetails"
+import CreateCampaign from "./pages/sponsor/CreateCampaign"
+import ManageCampaigns from "./pages/sponsor/ManageCampaigns"
+import CampaignApplicants from "./pages/sponsor/CampaignApplicants"
 
 export default function AppRoutes() {
   return (
@@ -32,6 +39,14 @@ export default function AppRoutes() {
         <Route path="/user/shop" element={<ShopPage />} />
         <Route path="/user/checkout" element={<TokenCheckout />} />
         <Route path="/admin/admindashboard" element={<AdminDashboard />} />
+        <Route path="/sponsor/creators" element={<BrowseCreators />} />
+        <Route path="/sponsor/dashboard" element={<SponsorDashboard />} />
+        <Route path="/sponsor/profile" element={<SponsorProfile />} />
+        <Route path="/sponsor/creator/:id" element={<CreatorDetails />} />
+        <Route path="/sponsor/create-campaign" element={<CreateCampaign />} />
+        <Route path="/sponsor/my-campaigns" element={<ManageCampaigns />} />
+        <Route path="/sponsor/applicants" element={<CampaignApplicants />} />
+
       </Routes>
     </BrowserRouter>
   )
