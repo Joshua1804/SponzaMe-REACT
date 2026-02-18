@@ -47,7 +47,7 @@ export default function Navbar() {
               className="group flex items-center gap-2 text-xl lg:text-2xl font-bold text-[#393873] transition-all duration-300 hover:scale-105"
             >
               <object
-                data="SponzaMe-Logo.svg"
+                data="/SponzaMe-Logo.svg"
                 alt="SponzaMe Logo"
                 className="h-8   w-auto object-contain"
               />

@@ -2,8 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Landing from "./pages/Landing"
 import About from "./pages/About"
 import Contact from "./pages/Contact"
-import Signup from "./pages/auth/Signup"
-import Login from "./pages/auth/Login"
+import AuthPage from "./pages/auth/AuthPage"
 import CreatorDashboard from "./pages/creator/CreatorDashboard"
 import CreatorProfile from "./pages/creator/CreatorProfile"
 import BrowseCampaigns from "./pages/creator/BrowseCampaigns"
@@ -28,8 +27,8 @@ export default function AppRoutes() {
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<AuthPage />} />
+        <Route path="/login" element={<AuthPage />} />
         <Route path="/creator/dashboard" element={<CreatorDashboard />} />
         <Route path="/creator/profile" element={<CreatorProfile />} />
         <Route path="/creator/campaigns" element={<BrowseCampaigns />} />
