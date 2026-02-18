@@ -1,0 +1,476 @@
+/* ============================================
+   AuthPage — Premium Sliding Auth Styles
+   ============================================ */
+
+/* ---------- Entrance animation ---------- */
+@keyframes authFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Floating blob animation ---------- */
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(30px, -20px) scale(1.05); }
+  66%      { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+.auth-blob {
+  position: absolute;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  filter: blur(64px);
+  opacity: 0.3;
+  animation: blobFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.auth-blob-1 {
+  top: -3rem;
+  left: -5rem;
+  background: #ddd6fe;
+}
+
+.auth-blob-2 {
+  bottom: -3rem;
+  right: -5rem;
+  background: #bfdbfe;
+  animation-delay: -4s;
+  animation-direction: reverse;
+}
+
+/* ---------- Card ---------- */
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 880px;
+  min-height: 580px;
+  background: #fff;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow:
+    0 24px 64px -16px rgba(57, 56, 115, 0.14),
+    0 0 0 1px rgba(81, 87, 161, 0.06);
+  animation: authFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Form visibility micro-animations ---------- */
+.auth-form-side .auth-form-box {
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-form-visible .auth-form-box {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.auth-form-hidden.login-side .auth-form-box {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.auth-form-hidden.signup-side .auth-form-box {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ---------- Form inner ---------- */
+.auth-form-box {
+  width: 100%;
+  max-width: 340px;
+}
+
+.auth-form-box h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #393873;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.auth-form-box .auth-sub {
+  font-size: 0.925rem;
+  color: #7c7c9a;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* ---------- Social buttons ---------- */
+.auth-socials {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.auth-social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: 1.5px solid #e4e4ee;
+  border-radius: 0.875rem;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #393873;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-social-btn:hover {
+  border-color: #5157a1;
+  background: #f4f4fb;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(81, 87, 161, 0.15);
+}
+
+.auth-social-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.auth-social-btn svg {
+  font-size: 1.15rem;
+}
+
+/* ---------- Divider ---------- */
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e4e4ee 30%, #e4e4ee 70%, transparent);
+}
+
+.auth-or span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a5a5bd;
+}
+
+/* ---------- Inputs ---------- */
+.auth-field {
+  margin-bottom: 0.85rem;
+}
+
+.auth-field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #52527a;
+  margin-bottom: 0.35rem;
+  margin-left: 0.1rem;
+}
+
+.auth-field input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid #e4e4ee;
+  border-radius: 0.875rem;
+  font-size: 0.9rem;
+  color: #393873;
+  background: #fafaff;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.auth-field input::placeholder {
+  color: #b3b3cc;
+}
+
+.auth-field input:focus {
+  border-color: #5157a1;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(81, 87, 161, 0.1);
+  transform: translateY(-1px);
+}
+
+/* ---------- Label row ---------- */
+.auth-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.auth-forgot {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #5157a1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.auth-forgot:hover {
+  color: #393873;
+  text-decoration: underline;
+}
+
+/* ---------- Submit ---------- */
+.auth-submit {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 0.875rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #5157a1, #393873);
+  cursor: pointer;
+  margin-top: 0.35rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(57, 56, 115, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-submit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.auth-submit:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(57, 56, 115, 0.4);
+}
+
+.auth-submit:hover::after {
+  opacity: 1;
+}
+
+.auth-submit:active {
+  transform: scale(0.97) translateY(0);
+  box-shadow: 0 4px 12px rgba(57, 56, 115, 0.3);
+}
+
+/* ---------- Switch text ---------- */
+.auth-switch {
+  text-align: center;
+  margin-top: 1.1rem;
+  font-size: 0.85rem;
+  color: #7c7c9a;
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: #5157a1;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 0.25rem;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.auth-switch button::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #5157a1;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 1px;
+}
+
+.auth-switch button:hover {
+  color: #393873;
+}
+
+.auth-switch button:hover::after {
+  width: 100%;
+}
+
+/* ============================================
+   Overlay (gradient sliding panel)
+   ============================================ */
+
+.auth-overlay-box {
+  transition:
+    transform 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+    border-radius 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+
+.auth-overlay-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #5157a1 0%, #4a4f94 25%, #393873 65%, #2e2d5e 100%);
+}
+
+/* Animated decorative circles */
+@keyframes circleFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-15px, 10px) scale(1.1); }
+}
+
+@keyframes circleFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(10px, -15px) scale(1.08); }
+}
+
+.auth-overlay-bg::before,
+.auth-overlay-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.auth-overlay-bg::before {
+  width: 280px;
+  height: 280px;
+  top: -70px;
+  right: -70px;
+  animation: circleFloat1 6s ease-in-out infinite;
+}
+
+.auth-overlay-bg::after {
+  width: 180px;
+  height: 180px;
+  bottom: -50px;
+  left: -50px;
+  animation: circleFloat2 8s ease-in-out infinite;
+}
+
+/* ---------- Overlay content transition ---------- */
+.auth-overlay-inner {
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+
+/* ---------- Overlay text ---------- */
+.auth-overlay-pane h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-overlay-pane p {
+  font-size: 0.9rem;
+  opacity: 0.88;
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+  max-width: 260px;
+  color: #fff;
+}
+
+.auth-overlay-cta {
+  padding: 0.75rem 2.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-overlay-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+
+.auth-overlay-cta:hover::before {
+  transform: translateX(0);
+}
+
+.auth-overlay-cta:hover {
+  border-color: #fff;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.auth-overlay-cta:active {
+  transform: scale(0.96) translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Mobile (< 768px)
+   ============================================ */
+
+.auth-mobile-bar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* Hide desktop overlay */
+  .auth-overlay-box {
+    display: none !important;
+  }
+
+  /* Stack forms vertically */
+  .auth-forms-row {
+    flex-direction: column !important;
+    min-height: auto !important;
+  }
+
+  .auth-form-side {
+    width: 100% !important;
+    padding: 2rem 1.5rem !important;
+  }
+
+  /* Reset form micro-animations on mobile (always visible) */
+  .auth-form-side .auth-form-box {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Show mobile toggle bar */
+  .auth-mobile-bar {
+    display: flex !important;
+    overflow: hidden;
+    background: #f0f0f8;
+  }
+
+  .auth-mobile-bar button {
+    flex: 1;
+    padding: 0.85rem;
+    border: none;
+    background: transparent;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #7c7c9a;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+
+  .auth-mobile-bar button.active {
+    color: #fff;
+    background: linear-gradient(135deg, #5157a1, #393873);
+  }
+}
