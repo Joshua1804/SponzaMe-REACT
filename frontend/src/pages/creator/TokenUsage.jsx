@@ -1,26 +1,35 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function TokenUsage() {
-    const tokenBalance = 120;
+    const [tokenBalance, setTokenBalance] = useState(0);
+    const [transactions, setTransactions] = useState([]);
+    const [stats, setStats] = useState({ totalEarned: 0, totalSpent: 0, totalPurchased: 0 });
 
-    const transactions = [
-        { id: 1, type: "spent", description: "Applied to 'Tech Product Review' campaign", amount: -5, date: "Jan 28, 2026", icon: "📋" },
-        { id: 2, type: "spent", description: "Unlocked contact for 'GameZone'", amount: -5, date: "Jan 25, 2026", icon: "📞" },
-        { id: 3, type: "earned", description: "Completed 'Mobile App Launch' campaign", amount: 15, date: "Jan 20, 2026", icon: "🎉" },
-        { id: 4, type: "purchased", description: "Purchased 50 token pack", amount: 50, date: "Jan 15, 2026", icon: "🛒" },
-        { id: 5, type: "spent", description: "Applied to 'Gaming Accessories' campaign", amount: -5, date: "Jan 12, 2026", icon: "📋" },
-        { id: 6, type: "earned", description: "Referral bonus - invited @sarah", amount: 10, date: "Jan 10, 2026", icon: "🎁" },
-        { id: 7, type: "purchased", description: "Purchased 100 token pack", amount: 100, date: "Jan 5, 2026", icon: "🛒" },
-    ];
-
-    const stats = {
-        totalEarned: 125,
-        totalSpent: 65,
-        totalPurchased: 150,
-    };
+    useEffect(() => {
+        api.get("/creator/tokens")
+            .then(res => {
+                setTokenBalance(res.data.balance || 0);
+                const txs = (res.data.transactions || []).map((t, i) => ({
+                    id: t.transaction_id || i,
+                    type: t.type,
+                    description: t.description,
+                    amount: t.amount,
+                    date: new Date(t.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+                    icon: t.type === "purchased" ? "🛒" : t.type === "earned" ? "🎉" : "📋",
+                }));
+                setTransactions(txs);
+                setStats({
+                    totalEarned: txs.filter(t => t.type === "earned").reduce((s, t) => s + t.amount, 0),
+                    totalSpent: Math.abs(txs.filter(t => t.type === "spent").reduce((s, t) => s + t.amount, 0)),
+                    totalPurchased: txs.filter(t => t.type === "purchased").reduce((s, t) => s + t.amount, 0),
+                });
+            })
+            .catch(() => { });
+    }, []);
 
     useEffect(() => {
         const els = document.querySelectorAll(".reveal");
@@ -141,8 +150,8 @@ export default function TokenUsage() {
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl ${tx.type === "earned" ? "bg-emerald-100" :
-                                                            tx.type === "purchased" ? "bg-blue-100" :
-                                                                "bg-red-100"
+                                                        tx.type === "purchased" ? "bg-blue-100" :
+                                                            "bg-red-100"
                                                         }`}>
                                                         {tx.icon}
                                                     </div>

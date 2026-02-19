@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import api from "../../api";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import "./AuthPage.css";
@@ -11,14 +12,88 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(location.pathname === "/signup");
 
+  // ── Form state ──
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirm, setSignupConfirm] = useState("");
+  const [signupRole, setSignupRole] = useState("creator");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setIsSignUp(location.pathname === "/signup");
+    setError("");
   }, [location.pathname]);
 
   const toggleMode = () => {
     const next = !isSignUp;
     setIsSignUp(next);
+    setError("");
     navigate(next ? "/signup" : "/login", { replace: true });
+  };
+
+  // ── Login handler ──
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await api.post(
+        "/auth/login",
+        { email: loginEmail, password: loginPassword }
+      );
+      const user = res.data.user;
+      // Redirect based on role
+      if (user.role === "creator") navigate("/creator/dashboard");
+      else if (user.role === "sponsor") navigate("/sponsor/dashboard");
+      else if (user.role === "admin") navigate("/admin/admindashboard");
+      else navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.error || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ── Signup handler ──
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (signupPassword !== signupConfirm) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await api.post(
+        "/auth/signup",
+        {
+          name: signupName,
+          email: signupEmail,
+          password: signupPassword,
+          confirmPassword: signupConfirm,
+          role: signupRole,
+        }
+      );
+      const user = res.data.user;
+      // After signup → go to edit-profile page
+      if (user.role === "creator") navigate("/creator/profile?edit=1");
+      else if (user.role === "sponsor") navigate("/sponsor/profile?edit=1");
+      else navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.error || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,19 +152,33 @@ export default function AuthPage() {
 
                 <div className="auth-or"><span>or</span></div>
 
-                <form onSubmit={(e) => e.preventDefault()}>
+                {!isSignUp && error && (
+                  <div className="auth-error">{error}</div>
+                )}
+
+                <form onSubmit={handleLogin}>
                   <div className="auth-field">
                     <label htmlFor="login-email">Email</label>
-                    <input id="login-email" type="email" placeholder="name@company.com" autoComplete="email" required />
+                    <input
+                      id="login-email" type="email" placeholder="name@company.com"
+                      autoComplete="email" required
+                      value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)}
+                    />
                   </div>
                   <div className="auth-field">
                     <div className="auth-label-row">
                       <label htmlFor="login-password">Password</label>
                       <a className="auth-forgot" href="#forgot">Forgot?</a>
                     </div>
-                    <input id="login-password" type="password" placeholder="••••••••" autoComplete="current-password" required />
+                    <input
+                      id="login-password" type="password" placeholder="••••••••"
+                      autoComplete="current-password" required
+                      value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)}
+                    />
                   </div>
-                  <button type="submit" className="auth-submit">Sign In</button>
+                  <button type="submit" className="auth-submit" disabled={loading}>
+                    {loading && !isSignUp ? "Signing In…" : "Sign In"}
+                  </button>
                 </form>
 
                 <p className="auth-switch">
@@ -122,24 +211,68 @@ export default function AuthPage() {
 
                 <div className="auth-or"><span>or</span></div>
 
-                <form onSubmit={(e) => e.preventDefault()}>
+                {isSignUp && error && (
+                  <div className="auth-error">{error}</div>
+                )}
+
+                <form onSubmit={handleSignup}>
                   <div className="auth-field">
                     <label htmlFor="signup-name">Full Name</label>
-                    <input id="signup-name" type="text" placeholder="Jane Doe" autoComplete="name" required />
+                    <input
+                      id="signup-name" type="text" placeholder="Jane Doe"
+                      autoComplete="name" required
+                      value={signupName} onChange={(e) => setSignupName(e.target.value)}
+                    />
                   </div>
                   <div className="auth-field">
                     <label htmlFor="signup-email">Email</label>
-                    <input id="signup-email" type="email" placeholder="name@company.com" autoComplete="email" required />
+                    <input
+                      id="signup-email" type="email" placeholder="name@company.com"
+                      autoComplete="email" required
+                      value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)}
+                    />
                   </div>
                   <div className="auth-field">
                     <label htmlFor="signup-password">Password</label>
-                    <input id="signup-password" type="password" placeholder="••••••••" autoComplete="new-password" required />
+                    <input
+                      id="signup-password" type="password" placeholder="••••••••"
+                      autoComplete="new-password" required
+                      value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)}
+                    />
                   </div>
                   <div className="auth-field">
                     <label htmlFor="signup-confirm">Confirm Password</label>
-                    <input id="signup-confirm" type="password" placeholder="••••••••" autoComplete="new-password" required />
+                    <input
+                      id="signup-confirm" type="password" placeholder="••••••••"
+                      autoComplete="new-password" required
+                      value={signupConfirm} onChange={(e) => setSignupConfirm(e.target.value)}
+                    />
                   </div>
-                  <button type="submit" className="auth-submit">Create Account</button>
+
+                  {/* Role selector */}
+                  <div className="auth-field">
+                    <label>I am a</label>
+                    <div className="auth-role-toggle">
+                      <button
+                        type="button"
+                        className={signupRole === "creator" ? "active" : ""}
+                        onClick={() => setSignupRole("creator")}
+                      >
+                        Creator
+                      </button>
+                      <button
+                        type="button"
+                        className={signupRole === "sponsor" ? "active" : ""}
+                        onClick={() => setSignupRole("sponsor")}
+                      >
+                        Sponsor
+                      </button>
+                    </div>
+                  </div>
+
+                  <button type="submit" className="auth-submit" disabled={loading}>
+                    {loading && isSignUp ? "Creating Account…" : "Create Account"}
+                  </button>
                 </form>
 
                 <p className="auth-switch">

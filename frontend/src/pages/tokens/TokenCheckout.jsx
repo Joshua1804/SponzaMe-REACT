@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function TokenCheckout() {
     const [searchParams] = useSearchParams();
@@ -82,11 +83,14 @@ export default function TokenCheckout() {
         e.preventDefault();
         setIsProcessing(true);
 
-        // Simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        setIsProcessing(false);
-        setShowSuccess(true);
+        try {
+            await api.post("/tokens/purchase", { plan: selectedPlan.id });
+            setShowSuccess(true);
+        } catch (err) {
+            alert(err.response?.data?.error || "Payment failed.");
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     if (showSuccess) {

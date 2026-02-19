@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -53,16 +54,25 @@ export default function CreateCampaign() {
     e.preventDefault();
 
     const payload = {
-      ...form,
-      requirements: form.requirements.split("\n"),
-      deliverables: form.deliverables.split("\n"),
-      status: "OPEN",
-      sponsor_id: 1,
+      title: form.title,
+      description: form.description,
+      budget: form.budget,
+      niche: form.niche,
+      deadline: form.deadline,
+      token_cost: form.tokenCost,
+      platforms: form.platforms.join(","),
+      requirements: form.requirements,
+      deliverables: form.deliverables,
     };
 
-    console.log("Campaign Payload:", payload);
-    alert("Campaign created successfully!");
-    navigate("/sponsor/campaigns");
+    api.post("/sponsor/campaigns", payload)
+      .then(() => {
+        alert("Campaign created successfully!");
+        navigate("/sponsor/campaigns");
+      })
+      .catch(err => {
+        alert(err.response?.data?.error || "Failed to create campaign.");
+      });
   };
 
   const inputStyle = `

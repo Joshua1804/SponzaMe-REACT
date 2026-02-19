@@ -2,53 +2,52 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function CampaignDetails() {
   const { id } = useParams();
   const [isApplying, setIsApplying] = useState(false);
+  const [campaign, setCampaign] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [applyMessage, setApplyMessage] = useState("");
 
   useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("active");
-            obs.unobserve(e.target);
-          }
+    api.get(`/creator/campaign/${id}`)
+      .then(res => {
+        const c = res.data.campaign;
+        setCampaign({
+          title: c.title,
+          sponsor: c.sponsor_name || c.company_name || "—",
+          budget: c.budget ? `₹${Number(c.budget).toLocaleString()}` : "—",
+          niche: c.niche || "—",
+          platforms: c.platforms ? c.platforms.split(",") : [],
+          deadline: c.deadline || "—",
+          applicants: c.applicant_count || 0,
+          tokenCost: c.token_cost || 2,
+          description: c.description || "",
+          requirements: c.requirements ? c.requirements.split("\n").filter(Boolean) : [],
+          deliverables: c.deliverables ? c.deliverables.split("\n").filter(Boolean) : [],
+          icon: "📢",
         });
-      },
-      { threshold: 0.15 },
-    );
-    els.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
+      })
+      .catch(() => setCampaign(null))
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  const campaign = {
-    title: "Smartphone Launch Promotion",
-    sponsor: "TechCorp India",
-    budget: "₹20,000",
-    niche: "Technology",
-    platforms: ["YouTube", "Instagram"],
-    deadline: "15 Feb 2026",
-    applicants: 24,
-    tokenCost: 5,
-    description: "We are launching our latest smartphone and are looking for technology creators to produce reviews, unboxing videos, and social posts focusing on real-world usage. The ideal creator should have experience in tech reviews and a genuine passion for mobile technology.",
-    requirements: [
-      "Minimum 10k followers/subscribers",
-      "1 YouTube video (minimum 5 minutes)",
-      "2 Instagram posts with stories",
-      "Delivery within 14 days",
-      "Original, authentic content only",
-    ],
-    deliverables: [
-      "Full product review video",
-      "Unboxing content",
-      "2 Instagram feed posts",
-      "Story highlights",
-    ],
-    icon: "📱",
+  const handleApply = () => {
+    api.post(`/creator/campaign/${id}/apply`)
+      .then(res => {
+        setApplyMessage(res.data.message || "Application submitted!");
+        setIsApplying(false);
+      })
+      .catch(err => {
+        setApplyMessage(err.response?.data?.error || "Failed to apply.");
+      });
   };
+
+  if (loading || !campaign) return (
+    <div className="pt-16 bg-gray-50 min-h-screen"><Navbar /><div className="flex items-center justify-center h-[60vh]"><p className="text-gray-500 text-lg">{loading ? "Loading..." : "Campaign not found."}</p></div><Footer /></div>
+  );
 
   return (
     <div className="pt-16 bg-gray-50 min-h-screen">
