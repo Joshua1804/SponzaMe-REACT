@@ -2,70 +2,34 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function Applications() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [showContactModal, setShowContactModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
 
-  // Mock applications data
-  const applications = [
-    {
-      id: 1,
-      campaign: "Smartphone Launch Promotion",
-      sponsor: "TechCorp India",
-      sponsorLogo: "📱",
-      status: "pending",
-      budget: "₹20,000",
-      date: "Jan 25, 2026",
-      niche: "Technology",
-      platforms: ["Instagram", "YouTube"],
-    },
-    {
-      id: 2,
-      campaign: "Gaming Accessories Review",
-      sponsor: "GameZone",
-      sponsorLogo: "🎮",
-      status: "accepted",
-      budget: "₹30,000",
-      date: "Jan 20, 2026",
-      niche: "Gaming",
-      platforms: ["YouTube", "Twitch"],
-    },
-    {
-      id: 3,
-      campaign: "Fitness App Promotion",
-      sponsor: "FitLife",
-      sponsorLogo: "💪",
-      status: "rejected",
-      budget: "₹15,000",
-      date: "Jan 18, 2026",
-      niche: "Fitness",
-      platforms: ["Instagram"],
-    },
-    {
-      id: 4,
-      campaign: "Travel Vlog Sponsorship",
-      sponsor: "WanderLux Hotels",
-      sponsorLogo: "✈️",
-      status: "accepted",
-      budget: "₹50,000",
-      date: "Jan 15, 2026",
-      niche: "Travel",
-      platforms: ["YouTube", "Instagram"],
-    },
-    {
-      id: 5,
-      campaign: "Skincare Brand Collaboration",
-      sponsor: "GlowUp Beauty",
-      sponsorLogo: "✨",
-      status: "pending",
-      budget: "₹25,000",
-      date: "Jan 28, 2026",
-      niche: "Beauty",
-      platforms: ["Instagram", "TikTok"],
-    },
-  ];
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get("/creator/applications")
+      .then(res => {
+        setApplications((res.data.applications || []).map(a => ({
+          id: a.application_id,
+          campaign: a.campaign_title,
+          sponsor: a.sponsor_name || "—",
+          sponsorLogo: "📢",
+          status: a.status,
+          budget: a.budget ? `₹${Number(a.budget).toLocaleString()}` : "—",
+          date: new Date(a.applied_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+          niche: a.niche || "—",
+          platforms: a.campaign_platforms ? a.campaign_platforms.split(",") : [],
+        })));
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredApplications = activeFilter === "all"
     ? applications

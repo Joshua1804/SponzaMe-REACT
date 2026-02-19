@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import axios from "axios";
+import api from "../../api";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import "./AuthPage.css";
-
-const API = "http://localhost:8000/api/auth";
 
 export default function AuthPage() {
   const location = useLocation();
@@ -46,10 +44,9 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${API}/login`,
-        { email: loginEmail, password: loginPassword },
-        { withCredentials: true }
+      const res = await api.post(
+        "/auth/login",
+        { email: loginEmail, password: loginPassword }
       );
       const user = res.data.user;
       // Redirect based on role
@@ -77,20 +74,20 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${API}/signup`,
+      const res = await api.post(
+        "/auth/signup",
         {
           name: signupName,
           email: signupEmail,
           password: signupPassword,
           confirmPassword: signupConfirm,
           role: signupRole,
-        },
-        { withCredentials: true }
+        }
       );
       const user = res.data.user;
-      if (user.role === "creator") navigate("/creator/dashboard");
-      else if (user.role === "sponsor") navigate("/sponsor/dashboard");
+      // After signup → go to edit-profile page
+      if (user.role === "creator") navigate("/creator/profile?edit=1");
+      else if (user.role === "sponsor") navigate("/sponsor/profile?edit=1");
       else navigate("/");
     } catch (err) {
       setError(err.response?.data?.error || "Signup failed. Please try again.");

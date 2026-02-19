@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function CreatorDashboard() {
   const [tokenBalance, setTokenBalance] = useState(0);
@@ -23,34 +24,37 @@ export default function CreatorDashboard() {
     return () => obs.disconnect();
   }, []);
 
-  // Animated token counter
+  const [applications, setApplications] = useState([]);
+  const [stats, setStats] = useState({ total: 0, pending: 0, accepted: 0, rejected: 0 });
+  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState("");
+  const [profileData, setProfileData] = useState(null);
+
   useEffect(() => {
-    const duration = 1500;
-    const steps = 40;
-    const interval = duration / steps;
-    const targetBalance = 120;
-
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      setTokenBalance(Math.floor(targetBalance * (step / steps)));
-      if (step >= steps) clearInterval(timer);
-    }, interval);
-
-    return () => clearInterval(timer);
+    api.get("/creator/dashboard")
+      .then(res => {
+        const d = res.data;
+        setTokenBalance(d.token_balance || 0);
+        setStats(d.stats || {});
+        setUserName(d.user_name || "Creator");
+        setProfileData(d.profile || null);
+        setApplications((d.recent_applications || []).map(a => ({
+          id: a.application_id,
+          campaign: a.campaign_title,
+          status: a.status.charAt(0).toUpperCase() + a.status.slice(1),
+          budget: a.budget ? `₹${Number(a.budget).toLocaleString()}` : "—",
+          statusColor: a.status === "accepted" ? "green" : a.status === "rejected" ? "red" : "yellow",
+        })));
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
   }, []);
 
-  const applications = [
-    { id: 1, campaign: "Tech Product Review", status: "Pending", budget: "₹15,000", statusColor: "yellow" },
-    { id: 2, campaign: "Gaming Accessories Promotion", status: "Accepted", budget: "₹25,000", statusColor: "green" },
-    { id: 3, campaign: "Mobile App Launch", status: "Rejected", budget: "₹10,000", statusColor: "red" },
-  ];
-
   const quickStats = [
-    { label: "Applications", value: "12", icon: "📋", color: "from-[#c7eff9] to-[#5157a1]/20", link: "/creator/applications" },
-    { label: "Active Deals", value: "3", icon: "🤝", color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/creator/applications?filter=accepted" },
-    { label: "Earnings", value: "₹45K", icon: "💰", color: "from-[#c7eff9] to-[#e7bdd3]", link: "#" },
-    { label: "Profile Views", value: "256", icon: "👁️", color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/creator/profile" },
+    { label: "Applications", value: String(stats.total || 0), icon: "📋", color: "from-[#c7eff9] to-[#5157a1]/20", link: "/creator/applications" },
+    { label: "Accepted", value: String(stats.accepted || 0), icon: "🤝", color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/creator/applications?filter=accepted" },
+    { label: "Pending", value: String(stats.pending || 0), icon: "⏳", color: "from-[#c7eff9] to-[#e7bdd3]", link: "/creator/applications?filter=pending" },
+    { label: "Rejected", value: String(stats.rejected || 0), icon: "❌", color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/creator/applications?filter=rejected" },
   ];
 
   return (
@@ -78,7 +82,7 @@ export default function CreatorDashboard() {
                   <span className="text-sm font-medium text-white/90">Profile Active</span>
                 </div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                  Welcome back, <span className="bg-gradient-to-r from-[#c7eff9] to-[#e7bdd3] bg-clip-text text-transparent">John!</span>
+                  Welcome back, <span className="bg-gradient-to-r from-[#c7eff9] to-[#e7bdd3] bg-clip-text text-transparent">{userName}!</span>
                 </h1>
                 <p className="text-white/70 text-lg">
                   Manage your profile and track your sponsorship opportunities
@@ -143,18 +147,18 @@ export default function CreatorDashboard() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900">Profile Summary</h2>
                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                  Complete
+                  Active
                 </span>
               </div>
 
               {/* Avatar */}
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#5157a1] to-[#393873] flex items-center justify-center text-3xl text-white shadow-lg">
-                  👨‍🎨
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#5157a1] to-[#393873] flex items-center justify-center text-xl text-white font-bold shadow-lg">
+                  {userName ? userName.split(" ").map(w => w[0]).join("").toUpperCase() : "👨‍🎨"}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">John Creator</h3>
-                  <p className="text-sm text-gray-500">Tech & Gadgets</p>
+                  <h3 className="font-semibold text-gray-900">{userName}</h3>
+                  <p className="text-sm text-gray-500">{profileData?.niche || "—"}</p>
                 </div>
               </div>
 
@@ -164,19 +168,19 @@ export default function CreatorDashboard() {
                   <span className="text-gray-600 flex items-center gap-2">
                     <span className="text-lg">📍</span> Location
                   </span>
-                  <span className="font-medium text-gray-900">Mumbai, India</span>
+                  <span className="font-medium text-gray-900">{profileData?.location || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                   <span className="text-gray-600 flex items-center gap-2">
                     <span className="text-lg">👥</span> Followers
                   </span>
-                  <span className="font-medium text-gray-900">50K+</span>
+                  <span className="font-medium text-gray-900">{profileData?.followers || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                   <span className="text-gray-600 flex items-center gap-2">
-                    <span className="text-lg">⭐</span> Rating
+                    <span className="text-lg">📱</span> Platforms
                   </span>
-                  <span className="font-medium text-gray-900">4.8/5</span>
+                  <span className="font-medium text-gray-900">{profileData?.platforms || "—"}</span>
                 </div>
               </div>
 

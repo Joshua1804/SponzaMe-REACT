@@ -39,6 +39,44 @@ if (preg_match('#^/api/auth/(\w+)$#', $uri, $matches)) {
     exit;
 }
 
+// Route: /api/creator/{action}
+// Route: /api/creator/{action}/{id}
+// Route: /api/creator/{action}/{id}/{subaction}
+if (preg_match('#^/api/creator/(\w+)(?:/(\d+))?(?:/(\w+))?$#', $uri, $matches)) {
+    require_once __DIR__ . '/../routes/creator.php';
+    $action = $matches[1];
+    $id = isset($matches[2]) ? (int)$matches[2] : null;
+    $subAction = $matches[3] ?? null;
+    handleCreatorRoutes($method, $action, $id, $subAction);
+    exit;
+}
+
+// Route: /api/sponsor/{action}
+// Route: /api/sponsor/{action}/{id}
+// Route: /api/sponsor/{action}/{id}/{subaction}
+if (preg_match('#^/api/sponsor/(\w+)(?:/(\d+))?(?:/(\w+))?$#', $uri, $matches)) {
+    require_once __DIR__ . '/../routes/sponsor.php';
+    $action = $matches[1];
+    $id = isset($matches[2]) ? (int)$matches[2] : null;
+    $subAction = $matches[3] ?? null;
+    handleSponsorRoutes($method, $action, $id, $subAction);
+    exit;
+}
+
+// Route: /api/admin/{action}
+if (preg_match('#^/api/admin/(\w+)$#', $uri, $matches)) {
+    require_once __DIR__ . '/../routes/admin.php';
+    handleAdminRoutes($method, $matches[1]);
+    exit;
+}
+
+// Route: /api/tokens/{action}
+if (preg_match('#^/api/tokens/(\w+)$#', $uri, $matches)) {
+    require_once __DIR__ . '/../routes/tokens.php';
+    handleTokenRoutes($method, $matches[1]);
+    exit;
+}
+
 // Fallback
 http_response_code(404);
 echo json_encode(['error' => 'Endpoint not found.']);

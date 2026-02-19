@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function SponsorDashboard() {
   const [tokenBalance, setTokenBalance] = useState(0);
@@ -18,40 +19,41 @@ export default function SponsorDashboard() {
           }
         });
       },
-      { threshold: 0.15 } 
+      { threshold: 0.15 }
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
 
-  // Animated token counter
+  const [campaigns, setCampaigns] = useState([]);
+  const [dashData, setDashData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState("");
+
   useEffect(() => {
-    const duration = 1500;
-    const steps = 40;
-    const interval = duration / steps;
-    const targetBalance = 80;
-
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      setTokenBalance(Math.floor(targetBalance * (step / steps)));
-      if (step >= steps) clearInterval(timer);
-    }, interval);
-
-    return () => clearInterval(timer);
+    api.get("/sponsor/dashboard")
+      .then(res => {
+        const d = res.data;
+        setTokenBalance(d.token_balance || 0);
+        setDashData(d);
+        setUserName(d.profile?.company_name || d.profile?.name || "Sponsor");
+        setCampaigns((d.recent_campaigns || []).map(c => ({
+          id: c.campaign_id,
+          title: c.title,
+          status: c.status.charAt(0).toUpperCase() + c.status.slice(1),
+          applicants: c.applicant_count || 0,
+          statusColor: c.status === "active" ? "green" : c.status === "paused" ? "yellow" : "blue",
+        })));
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
   }, []);
 
-  const campaigns = [
-    { id: 1, title: "Smartphone Launch", status: "Active", applicants: 24, statusColor: "green" },
-    { id: 2, title: "Gaming Accessories Promo", status: "Draft", applicants: 0, statusColor: "yellow" },
-    { id: 3, title: "Fitness App Campaign", status: "Completed", applicants: 42, statusColor: "blue" },
-  ];
-
   const quickStats = [
-    { label: "Campaigns Posted", value: "6", icon: "📢", color: "from-[#c7eff9] to-[#5157a1]/20", link: "/sponsor/campaigns" },
-    { label: "Active Campaigns", value: "3", icon: "🚀", color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/sponsor/campaigns?filter=active" },
-    { label: "Total Spend", value: "₹1.2L", icon: "💰", color: "from-[#c7eff9] to-[#e7bdd3]", link: "#" },
-    { label: "Creators Shortlisted", value: "18", icon: "⭐", color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/sponsor/creators" },
+    { label: "Campaigns Posted", value: String(dashData.total_campaigns || 0), icon: "📢", color: "from-[#c7eff9] to-[#5157a1]/20", link: "/sponsor/campaigns" },
+    { label: "Active Campaigns", value: String(dashData.active_campaigns || 0), icon: "🚀", color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/sponsor/campaigns?filter=active" },
+    { label: "Total Applicants", value: String(dashData.total_applicants || 0), icon: "💰", color: "from-[#c7eff9] to-[#e7bdd3]", link: "#" },
+    { label: "Creators Shortlisted", value: "—", icon: "⭐", color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/sponsor/creators" },
   ];
 
   return (
@@ -83,7 +85,7 @@ export default function SponsorDashboard() {
                 <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
                   Welcome back,{" "}
                   <span className="bg-gradient-to-r from-[#c7eff9] to-[#e7bdd3] bg-clip-text text-transparent">
-                    BrandX!
+                    {userName}!
                   </span>
                 </h1>
                 <p className="text-white/70 text-lg">
@@ -184,11 +186,10 @@ export default function SponsorDashboard() {
                   <tr key={i} className="border-b hover:bg-gray-50">
                     <td className="py-4">{c.title}</td>
                     <td>
-                      <span className={`px-3 py-1 rounded-full text-sm ${
-                        c.statusColor === "green" ? "bg-green-100 text-green-700" :
+                      <span className={`px-3 py-1 rounded-full text-sm ${c.statusColor === "green" ? "bg-green-100 text-green-700" :
                         c.statusColor === "yellow" ? "bg-yellow-100 text-yellow-700" :
-                        "bg-blue-100 text-blue-700"
-                      }`}>
+                          "bg-blue-100 text-blue-700"
+                        }`}>
                         {c.status}
                       </span>
                     </td>

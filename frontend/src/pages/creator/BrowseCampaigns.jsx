@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function BrowseCampaigns() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,74 +27,27 @@ export default function BrowseCampaigns() {
     return () => observer.disconnect();
   }, []);
 
-  const campaigns = [
-    {
-      title: "Smartphone Launch Promotion",
-      sponsor: "TechCorp India",
-      budget: "₹20,000",
-      desc: "Looking for tech creators to promote our latest smartphone launch through reviews and posts.",
-      link: "/creator/campaign/1",
-      icon: "📱",
-      tags: ["Technology", "Reviews"],
-      deadline: "15 Feb 2026",
-      applicants: 24,
-    },
-    {
-      title: "Gaming Accessories Review",
-      sponsor: "GameZone",
-      budget: "₹30,000",
-      desc: "Seeking gaming creators for accessory reviews and gameplay integrations.",
-      link: "/creator/campaign/2",
-      icon: "🎮",
-      tags: ["Gaming", "YouTube"],
-      deadline: "20 Feb 2026",
-      applicants: 18,
-    },
-    {
-      title: "Fitness App Promotion",
-      sponsor: "FitLife",
-      budget: "₹15,000",
-      desc: "Looking for fitness influencers to promote our mobile app through reels and stories.",
-      link: "/creator/campaign/3",
-      icon: "💪",
-      tags: ["Fitness", "Instagram"],
-      deadline: "25 Feb 2026",
-      applicants: 32,
-    },
-    {
-      title: "Fashion Brand Collaboration",
-      sponsor: "StyleHub",
-      budget: "₹40,000",
-      desc: "Premium fashion brand seeking style influencers for seasonal campaign collaboration.",
-      link: "/creator/campaign/4",
-      icon: "👗",
-      tags: ["Fashion", "Lifestyle"],
-      deadline: "28 Feb 2026",
-      applicants: 45,
-    },
-    {
-      title: "Food Delivery App Review",
-      sponsor: "QuickBite",
-      budget: "₹12,000",
-      desc: "Looking for food bloggers to review and promote our new delivery app features.",
-      link: "/creator/campaign/5",
-      icon: "🍔",
-      tags: ["Food", "Apps"],
-      deadline: "10 Feb 2026",
-      applicants: 28,
-    },
-    {
-      title: "Travel Vlog Series",
-      sponsor: "WanderLust Tours",
-      budget: "₹50,000",
-      desc: "Travel creators needed for an exclusive destination vlog series partnership.",
-      link: "/creator/campaign/6",
-      icon: "✈️",
-      tags: ["Travel", "Vlogging"],
-      deadline: "5 Mar 2026",
-      applicants: 56,
-    },
-  ];
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get("/creator/campaigns")
+      .then(res => {
+        setCampaigns((res.data.campaigns || []).map(c => ({
+          title: c.title,
+          sponsor: c.sponsor_name || c.company_name || "—",
+          budget: c.budget ? `₹${Number(c.budget).toLocaleString()}` : "—",
+          desc: c.description || "",
+          link: `/creator/campaign/${c.campaign_id}`,
+          icon: "📢",
+          tags: [c.niche, ...(c.platforms ? c.platforms.split(",") : [])].filter(Boolean),
+          deadline: c.deadline || "—",
+          applicants: c.applicant_count || 0,
+        })));
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="pt-16 bg-gray-50 min-h-screen">
@@ -187,8 +141,8 @@ export default function BrowseCampaigns() {
                 <button
                   key={i}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${i === 0
-                      ? "bg-[#5157a1] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-[#5157a1]/10 hover:text-[#5157a1]"
+                    ? "bg-[#5157a1] text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-[#5157a1]/10 hover:text-[#5157a1]"
                     }`}
                 >
                   {tag}

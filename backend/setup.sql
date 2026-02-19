@@ -19,6 +19,13 @@ CREATE TABLE IF NOT EXISTS creator_profiles (
     description TEXT,
     platforms VARCHAR(255),
     instalink VARCHAR(255),
+    bio TEXT,
+    niche VARCHAR(100),
+    location VARCHAR(100),
+    pricing VARCHAR(100),
+    followers VARCHAR(50),
+    youtube_url VARCHAR(255),
+    twitter_url VARCHAR(255),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -34,6 +41,11 @@ CREATE TABLE IF NOT EXISTS sponsor_profiles (
     user_id INT NOT NULL,
     company_name VARCHAR(150) NOT NULL,
     description TEXT,
+    industry VARCHAR(100),
+    location VARCHAR(100),
+    budget_range VARCHAR(100),
+    hiring_for VARCHAR(255),
+    platforms VARCHAR(255),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -53,6 +65,11 @@ CREATE TABLE IF NOT EXISTS campaigns (
     budget DECIMAL(12,2),
     company_name VARCHAR(150),
     status VARCHAR(20) DEFAULT 'active',
+    deadline DATE,
+    platforms VARCHAR(255),
+    token_cost INT NOT NULL DEFAULT 2,
+    requirements TEXT,
+    deliverables TEXT,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -83,4 +100,20 @@ CREATE TABLE IF NOT EXISTS applications (
 
     UNIQUE KEY unique_application (campaign_id, creator_id)
 
+) ENGINE=InnoDB;
+
+
+CREATE TABLE IF NOT EXISTS token_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    type VARCHAR(20) NOT NULL COMMENT 'spent, earned, purchased',
+    amount INT NOT NULL,
+    description VARCHAR(255),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_token_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;

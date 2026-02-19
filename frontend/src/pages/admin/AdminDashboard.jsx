@@ -2,20 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import api from "../../api";
 
-/* -------------------- DATA -------------------- */
-const userTypeData = [
-  { name: "Free Users", value: 400 },
-  { name: "Basic Users", value: 300 },
-  { name: "Value Users", value: 250 },
-  { name: "Premium Users", value: 200 },
-];
-
-const roleData = [
-  { name: "Content Creators", value: 650 },
-  { name: "Sponsors", value: 450 },
-];
-
+/* -------------------- DATA defaults -------------------- */
 const COLORS = ["#c7eff9", "#e7bdd3", "#5157a1", "#393873"];
 
 /* -------------------- CLOCK COMPONENT -------------------- */
@@ -49,10 +38,35 @@ function Clock() {
 
 /* -------------------- DASHBOARD -------------------- */
 export default function AdminDashboard() {
+  const [roleData, setRoleData] = useState([
+    { name: "Content Creators", value: 0 },
+    { name: "Sponsors", value: 0 },
+  ]);
+  const [userTypeData, setUserTypeData] = useState([
+    { name: "Total Users", value: 0 },
+    { name: "Active Users", value: 0 },
+  ]);
+  const [campaignCount, setCampaignCount] = useState(0);
 
-  // Memoized data so charts NEVER re-render unless page reloads
-  const memoUserTypeData = useMemo(() => userTypeData, []);
-  const memoRoleData = useMemo(() => roleData, []);
+  useEffect(() => {
+    api.get("/admin/dashboard")
+      .then(res => {
+        const u = res.data.users || {};
+        setRoleData([
+          { name: "Content Creators", value: u.creators || 0 },
+          { name: "Sponsors", value: u.sponsors || 0 },
+        ]);
+        setUserTypeData([
+          { name: "Total Users", value: u.total || 0 },
+          { name: "Active Users", value: u.active || 0 },
+        ]);
+        setCampaignCount(res.data.campaigns || 0);
+      })
+      .catch(() => { });
+  }, []);
+
+  const memoUserTypeData = useMemo(() => userTypeData, [userTypeData]);
+  const memoRoleData = useMemo(() => roleData, [roleData]);
 
   return (
     <>

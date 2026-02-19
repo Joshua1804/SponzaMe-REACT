@@ -1,32 +1,83 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function SponsorProfile() {
-  const [isEditing, setIsEditing] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isEditing, setIsEditing] = useState(searchParams.get("edit") === "1");
+  const [profile, setProfile] = useState(null);
+  const [editData, setEditData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [tokenBalance, setTokenBalance] = useState(0);
 
-  const profile = {
-    companyName: "TechNova Pvt Ltd",
-    username: "@technova",
-    initials: "TN",
-    industry: "Consumer Electronics",
-    bio: "TechNova is a leading consumer electronics brand focused on innovative smart devices. We collaborate with content creators to promote authentic and impactful marketing campaigns.",
-    location: "Bangalore, India",
-    budgetRange: "₹50,000 – ₹5,00,000",
-    hiringFor: ["Tech Reviews", "Product Launches", "Short-form Reels"],
-    stats: {
-      campaignsPosted: 18,
-      creatorsHired: 42,
-      rating: 4.6,
-      completionRate: "96%",
-    },
-    platforms: ["YouTube", "Instagram"],
+  useEffect(() => {
+    api.get("/sponsor/profile")
+      .then(res => {
+        const p = res.data.profile;
+        setProfile({
+          companyName: p.company_name || p.name || "—",
+          username: "@" + (p.name || "").toLowerCase().replace(/\s+/g, ""),
+          initials: (p.name || "").split(" ").map(w => w[0]).join("").toUpperCase(),
+          industry: p.industry || "Not set",
+          bio: p.bio || p.description || "No bio yet.",
+          location: p.location || "Not set",
+          budgetRange: p.budget_range || "Not set",
+          hiringFor: p.hiring_for ? p.hiring_for.split(",") : [],
+          stats: {
+            campaignsPosted: p.campaigns_count || 0,
+            creatorsHired: 0,
+            rating: 0,
+            completionRate: "—",
+          },
+          platforms: p.platforms ? p.platforms.split(",") : [],
+        });
+        setEditData({
+          company_name: p.company_name || p.name || "",
+          industry: p.industry || "",
+          description: p.description || "",
+          location: p.location || "",
+          budget_range: p.budget_range || "",
+          hiring_for: p.hiring_for || "",
+          platforms: p.platforms || "",
+        });
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+
+    api.get("/tokens/balance").then(res => setTokenBalance(res.data.balance || 0)).catch(() => { });
+  }, []);
+
+  const handleSaveProfile = () => {
+    api.put("/sponsor/profile", editData)
+      .then(() => {
+        setIsEditing(false);
+        navigate("/sponsor/profile");
+        // refetch profile
+        api.get("/sponsor/profile").then(res => {
+          const p = res.data.profile;
+          setProfile({
+            companyName: p.company_name || p.name || "\u2014",
+            username: "@" + (p.name || "").toLowerCase().replace(/\s+/g, ""),
+            initials: (p.name || "").split(" ").map(w => w[0]).join("").toUpperCase(),
+            industry: p.industry || "Not set",
+            bio: p.description || "No bio yet.",
+            location: p.location || "Not set",
+            budgetRange: p.budget_range || "Not set",
+            hiringFor: p.hiring_for ? p.hiring_for.split(",") : [],
+            stats: { campaignsPosted: p.campaigns_count || 0, creatorsHired: 0, rating: 0, completionRate: "\u2014" },
+            platforms: p.platforms ? p.platforms.split(",") : [],
+          });
+        });
+      })
+      .catch(() => alert("Failed to save profile."));
   };
 
   useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
+    if (!profile) return;
+    const els = document.querySelectorAll(".reveal:not(.active)");
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -40,14 +91,13 @@ export default function SponsorProfile() {
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [profile]);
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/user/shop');
-  };
-
+  if (loading || !profile) return (
+    <div className="pt-16 bg-gray-50 min-h-screen"><Navbar /><div className="flex items-center justify-center h-[60vh]"><p className="text-gray-500 text-lg">{loading ? "Loading profile..." : "Profile not found."}</p></div><Footer /></div>
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -128,6 +178,65 @@ export default function SponsorProfile() {
         </div>
       </div>
 
+      {/* ── EDIT PROFILE FORM ── */}
+      {isEditing && (
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-b from-[#393873]/5 to-transparent">
+          <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-[#393873] flex items-center gap-2">
+                <span>✏️</span> Edit Company Profile
+              </h2>
+              <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-5">
+              {[
+                { label: "Company Name", key: "company_name", type: "text", placeholder: "Your company name" },
+                { label: "Industry", key: "industry", type: "text", placeholder: "e.g. Consumer Electronics" },
+                { label: "Location", key: "location", type: "text", placeholder: "e.g. Bangalore, India" },
+                { label: "Budget Range", key: "budget_range", type: "text", placeholder: "e.g. ₹50,000 – ₹5,00,000" },
+                { label: "Hiring For", key: "hiring_for", type: "text", placeholder: "e.g. Tech Reviews,Reels" },
+                { label: "Platforms", key: "platforms", type: "text", placeholder: "e.g. YouTube,Instagram" },
+              ].map(f => (
+                <div key={f.key}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{f.label}</label>
+                  <input
+                    type={f.type}
+                    value={editData[f.key] || ""}
+                    onChange={e => setEditData({ ...editData, [f.key]: e.target.value })}
+                    placeholder={f.placeholder}
+                    className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5157a1] focus:border-transparent transition-all"
+                  />
+                </div>
+              ))}
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">About Company</label>
+                <textarea
+                  rows={3}
+                  value={editData.description || ""}
+                  onChange={e => setEditData({ ...editData, description: e.target.value })}
+                  placeholder="Tell creators about your company..."
+                  className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5157a1] focus:border-transparent transition-all resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleSaveProfile}
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+              >
+                💾 Save Profile
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-6 py-3 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <div className="w-full px-4 sm:px-6 lg:px-8 py-16 -mt-8 relative z-20">
         <div className="max-w-5xl mx-auto grid lg:grid-cols-3 gap-6">
@@ -150,8 +259,8 @@ export default function SponsorProfile() {
                 {[
                   { label: "Industry", value: profile.industry, icon: "🏭" },
                   { label: "Budget Range", value: profile.budgetRange, icon: "💰" },
-                  { label: "Platforms", value: profile.platforms.join(", "), icon: "📱" },
-                  { label: "Hiring For", value: profile.hiringFor.join(", "), icon: "🎯" },
+                  { label: "Platforms", value: profile.platforms.join(", ") || "—", icon: "📱" },
+                  { label: "Hiring For", value: profile.hiringFor.join(", ") || "—", icon: "🎯" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
@@ -192,9 +301,9 @@ export default function SponsorProfile() {
             {/* Tokens */}
             <div className="reveal delay-2 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6">
               <p className="text-sm text-amber-600">Token Balance</p>
-              <p className="text-2xl font-bold text-amber-800 mb-4">32</p>
+              <p className="text-2xl font-bold text-amber-800 mb-4">{tokenBalance}</p>
 
-              <button onClick={handleClick} className="w-full py-2 rounded-xl
+              <button onClick={() => navigate("/user/shop")} className="w-full py-2 rounded-xl
                 bg-gradient-to-r from-amber-500 to-orange-500
                 text-white font-medium cursor-pointer
                 transition-all duration-200 ease-in-out
