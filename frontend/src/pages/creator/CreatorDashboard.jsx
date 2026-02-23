@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ClipboardList, Handshake, Clock, XCircle, Coins, MapPin, Users, Smartphone, Gamepad2, TabletSmartphone, Search, FileText, ShoppingCart } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -51,10 +52,10 @@ export default function CreatorDashboard() {
   }, []);
 
   const quickStats = [
-    { label: "Applications", value: String(stats.total || 0), icon: "📋", color: "from-[#c7eff9] to-[#5157a1]/20", link: "/creator/applications" },
-    { label: "Accepted", value: String(stats.accepted || 0), icon: "🤝", color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/creator/applications?filter=accepted" },
-    { label: "Pending", value: String(stats.pending || 0), icon: "⏳", color: "from-[#c7eff9] to-[#e7bdd3]", link: "/creator/applications?filter=pending" },
-    { label: "Rejected", value: String(stats.rejected || 0), icon: "❌", color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/creator/applications?filter=rejected" },
+    { label: "Applications", value: String(stats.total || 0), icon: <ClipboardList size={24} />, color: "from-[#c7eff9] to-[#5157a1]/20", link: "/creator/applications" },
+    { label: "Accepted", value: String(stats.accepted || 0), icon: <Handshake size={24} />, color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/creator/applications?filter=accepted" },
+    { label: "Pending", value: String(stats.pending || 0), icon: <Clock size={24} />, color: "from-[#c7eff9] to-[#e7bdd3]", link: "/creator/applications?filter=pending" },
+    { label: "Rejected", value: String(stats.rejected || 0), icon: <XCircle size={24} />, color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/creator/applications?filter=rejected" },
   ];
 
   return (
@@ -96,7 +97,7 @@ export default function CreatorDashboard() {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform">
-                    🪙
+                    <Coins size={24} />
                   </div>
                   <div>
                     <p className="text-sm text-white/70">Token Balance</p>
@@ -154,7 +155,7 @@ export default function CreatorDashboard() {
               {/* Avatar */}
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#5157a1] to-[#393873] flex items-center justify-center text-xl text-white font-bold shadow-lg">
-                  {userName ? userName.split(" ").map(w => w[0]).join("").toUpperCase() : "👨‍🎨"}
+                  {userName ? userName.split(" ").map(w => w[0]).join("").toUpperCase() : "?"}
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">{userName}</h3>
@@ -166,19 +167,19 @@ export default function CreatorDashboard() {
               <div className="space-y-4 mb-6">
                 <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                   <span className="text-gray-600 flex items-center gap-2">
-                    <span className="text-lg">📍</span> Location
+                    <MapPin size={18} /> Location
                   </span>
                   <span className="font-medium text-gray-900">{profileData?.location || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                   <span className="text-gray-600 flex items-center gap-2">
-                    <span className="text-lg">👥</span> Followers
+                    <Users size={18} /> Followers
                   </span>
                   <span className="font-medium text-gray-900">{profileData?.followers || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                   <span className="text-gray-600 flex items-center gap-2">
-                    <span className="text-lg">📱</span> Platforms
+                    <Smartphone size={18} /> Platforms
                   </span>
                   <span className="font-medium text-gray-900">{profileData?.platforms || "—"}</span>
                 </div>
@@ -224,7 +225,7 @@ export default function CreatorDashboard() {
                               i === 1 ? 'from-purple-100 to-purple-200' :
                                 'from-pink-100 to-pink-200'
                               } flex items-center justify-center`}>
-                              {i === 0 ? '📱' : i === 1 ? '🎮' : '📲'}
+                              {i === 0 ? <Smartphone size={20} /> : i === 1 ? <Gamepad2 size={20} /> : <TabletSmartphone size={20} />}
                             </div>
                             <span className="font-medium text-gray-900">{app.campaign}</span>
                           </div>
@@ -263,10 +264,10 @@ export default function CreatorDashboard() {
           {/* Quick Actions */}
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: "Browse Campaigns", desc: "Find new opportunities", icon: "🔍", color: "from-[#c7eff9] to-[#5157a1]/30", link: "/creator/campaigns" },
-              { title: "My Applications", desc: "Track your applications", icon: "📄", color: "from-[#e7bdd3] to-[#5157a1]/30", link: "/creator/applications" },
-              { title: "Token Usage", desc: "View token history", icon: "🪙", color: "from-amber-100 to-orange-200", link: "/creator/tokens" },
-              { title: "Buy Tokens", desc: "Get more tokens", icon: "🛒", color: "from-[#c7eff9] to-[#e7bdd3]", link: "/user/shop" },
+              { title: "Browse Campaigns", desc: "Find new opportunities", icon: <Search size={24} />, color: "from-[#c7eff9] to-[#5157a1]/30", link: "/creator/campaigns" },
+              { title: "My Applications", desc: "Track your applications", icon: <FileText size={24} />, color: "from-[#e7bdd3] to-[#5157a1]/30", link: "/creator/applications" },
+              { title: "Token Usage", desc: "View token history", icon: <Coins size={24} />, color: "from-amber-100 to-orange-200", link: "/creator/tokens" },
+              { title: "Buy Tokens", desc: "Get more tokens", icon: <ShoppingCart size={24} />, color: "from-[#c7eff9] to-[#e7bdd3]", link: "/user/shop" },
             ].map((action, i) => (
               <Link
                 to={action.link}

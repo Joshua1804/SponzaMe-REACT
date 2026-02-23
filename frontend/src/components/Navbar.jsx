@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Coins } from "lucide-react";
 import api from "../api";
 
 /* ── Role-based navigation links ── */
@@ -354,7 +355,7 @@ export default function Navbar() {
                 </div>
                 {(user.role === "creator" || user.role === "sponsor") && (
                   <span className="ml-auto px-2.5 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-[#5157a1] to-[#393873] text-white">
-                    🪙 {user.token_count ?? 0}
+                    <Coins size={14} className="inline" /> {user.token_count ?? 0}
                   </span>
                 )}
               </div>
