@@ -144,4 +144,45 @@ class Campaign
         $stmt->execute(['cid' => $campaignId]);
         return (int)$stmt->fetchColumn();
     }
+
+    /**
+     * Update campaign fields.
+     */
+    public static function update(int $id, array $data): bool
+    {
+        $db = getDB();
+        $stmt = $db->prepare(
+            "UPDATE campaigns SET
+                title        = :title,
+                description  = :desc,
+                niche        = :niche,
+                budget       = :budget,
+                deadline     = :deadline,
+                platforms    = :platforms,
+                requirements = :reqs,
+                deliverables = :delivs
+             WHERE campaign_id = :id"
+        );
+        return $stmt->execute([
+            'title'     => $data['title'],
+            'desc'      => $data['description'] ?? '',
+            'niche'     => $data['niche'] ?? null,
+            'budget'    => $data['budget'] ?? null,
+            'deadline'  => $data['deadline'] ?? null,
+            'platforms' => is_array($data['platforms'] ?? null) ? implode(',', $data['platforms']) : ($data['platforms'] ?? null),
+            'reqs'      => is_array($data['requirements'] ?? null) ? implode("\n", $data['requirements']) : ($data['requirements'] ?? null),
+            'delivs'    => is_array($data['deliverables'] ?? null) ? implode("\n", $data['deliverables']) : ($data['deliverables'] ?? null),
+            'id'        => $id,
+        ]);
+    }
+
+    /**
+     * Delete a campaign by ID. Applications are cascade-deleted via FK.
+     */
+    public static function delete(int $id): bool
+    {
+        $db = getDB();
+        $stmt = $db->prepare("DELETE FROM campaigns WHERE campaign_id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

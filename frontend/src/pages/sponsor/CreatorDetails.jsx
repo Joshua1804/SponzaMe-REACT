@@ -2,13 +2,46 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import api from "../../api";
 
 export default function CreatorDetails() {
   const { id } = useParams();
-  const [actionTaken, setActionTaken] = useState(null);
+  const [creator, setCreator] = useState(null);
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  /* ── Page title ── */
+  useEffect(() => { document.title = "Creator Details — SponzaMe"; }, []);
+
+  const [selectedCampaign, setSelectedCampaign] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendResult, setSendResult] = useState(null); // { type, message }
+
+  /* ── Fetch creator + sponsor's campaigns ── */
   useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
+    Promise.all([
+      api.get(`/sponsor/creator/${id}`),
+      api.get("/sponsor/campaigns"),
+    ])
+      .then(([creatorRes, campaignsRes]) => {
+        setCreator(creatorRes.data.creator);
+        // Only show active campaigns in the dropdown
+        const active = (campaignsRes.data.campaigns || []).filter(
+          (c) => c.status === "active"
+        );
+        setCampaigns(active);
+      })
+      .catch((err) =>
+        setError(err.response?.data?.error || "Failed to load creator.")
+      )
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  /* ── Scroll reveal ── */
+  useEffect(() => {
+    if (!creator) return;
+    const els = document.querySelectorAll(".reveal:not(.active)");
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -22,36 +55,83 @@ export default function CreatorDetails() {
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [creator, sendResult]);
 
-  const creator = {
-    name: "John Creator",
-    username: "@johncreator",
-    initials: "JC",
-    niche: "Technology",
-    platforms: ["YouTube", "Instagram"],
-    location: "Mumbai, India",
-    followers: "125K",
-    rating: 4.8,
-    completionRate: "98%",
-    pricing: "₹10,000 – ₹30,000",
-    bio: "Tech content creator specializing in smartphone reviews, gadget unboxings, and honest long-term usage content.",
-    skills: [
-      "Smartphone Reviews",
-      "Unboxing Videos",
-      "Instagram Reels",
-      "Brand Integrations",
-    ],
-    pastWork: [
-      "Samsung Galaxy Campaign",
-      "OnePlus Launch Promo",
-      "Realme Review Series",
-    ],
-    appliedFor: "Smartphone Launch Promotion",
+  /* ── Send campaign ── */
+  const handleSendCampaign = () => {
+    if (!selectedCampaign) return;
+    setSending(true);
+    setSendResult(null);
+
+    api
+      .post("/sponsor/send-campaign", {
+        campaign_id: Number(selectedCampaign),
+        creator_user_id: Number(id),
+      })
+      .then((res) => {
+        setSendResult({
+          type: "success",
+          message: res.data.message || "Invitation sent!",
+        });
+        setSelectedCampaign("");
+      })
+      .catch((err) => {
+        const msg =
+          err.response?.data?.error || "Failed to send campaign.";
+        setSendResult({ type: "error", message: msg });
+      })
+      .finally(() => setSending(false));
   };
 
+  /* ── Helpers ── */
+  const name = creator?.fullname || creator?.name || "Creator";
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+  const platforms = creator?.platforms
+    ? creator.platforms.split(",").map((p) => p.trim())
+    : [];
+
+  /* ── Loading ── */
+  if (loading)
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-[#5157a1]/20 border-t-[#5157a1] rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-gray-500">Loading creator profile...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+
+  /* ── Error ── */
+  if (error && !creator)
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center h-[60vh] flex-col gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">
+            ⚠️
+          </div>
+          <p className="text-red-500">{error}</p>
+          <Link
+            to="/sponsor/creators"
+            className="px-6 py-3 rounded-xl bg-[#5157a1] text-white font-semibold hover:shadow-lg transition-all"
+          >
+            ← Back to Creators
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+
   return (
-    <div className="pt-16 bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <Navbar />
 
       {/* Hero */}
@@ -61,142 +141,285 @@ export default function CreatorDetails() {
           <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-[#c7eff9]/10 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-12">
+        <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb */}
-            <div className="reveal flex items-center gap-2 text-white/60 text-sm mb-6">
-              <Link to="/sponsor/applications" className="hover:text-white">
-                Applications
+            <nav className="reveal flex items-center gap-2 text-white/60 text-sm mb-6">
+              <Link
+                to="/sponsor/creators"
+                className="hover:text-white transition-colors"
+              >
+                Browse Creators
               </Link>
               <span>→</span>
-              <span className="text-white">{creator.name}</span>
-            </div>
+              <span className="text-white">{name}</span>
+            </nav>
 
-            {/* Header */}
+            {/* Profile header */}
             <div className="reveal flex items-center gap-6">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#c7eff9] to-[#e7bdd3] flex items-center justify-center text-3xl font-bold text-[#393873]">
-                {creator.initials}
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#c7eff9] to-[#e7bdd3] flex items-center justify-center text-3xl font-bold text-[#393873] shadow-2xl">
+                {initials}
               </div>
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-white">
-                  {creator.name}
+                  {name}
                 </h1>
-                <p className="text-white/70">{creator.username}</p>
-                <p className="text-white/60 text-sm mt-1">
-                  📍 {creator.location} · 🎯 {creator.niche}
-                </p>
+                {creator?.email && (
+                  <p className="text-white/60 text-sm">{creator.email}</p>
+                )}
+                <div className="flex flex-wrap items-center gap-3 mt-2">
+                  {creator?.location && (
+                    <span className="px-3 py-1 rounded-full bg-[#c7eff9]/20 text-[#c7eff9] text-sm font-medium border border-[#c7eff9]/30">
+                      📍 {creator.location}
+                    </span>
+                  )}
+                  {creator?.niche && (
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-white/90 text-sm font-medium border border-white/20">
+                      🎯 {creator.niche}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+      {/* Stats bar */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
         <div className="max-w-4xl mx-auto">
-          <div className="reveal delay-1 grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="reveal delay-1 grid grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { label: "Followers", value: creator.followers, icon: "👥" },
-              { label: "Rating", value: creator.rating, icon: "⭐" },
-              { label: "Completion", value: creator.completionRate, icon: "✅" },
-              { label: "Pricing", value: creator.pricing, icon: "💰" },
+              {
+                label: "Followers",
+                value: creator?.followers || "—",
+                icon: "👥",
+                gradient: "from-blue-50 to-indigo-50",
+              },
+              {
+                label: "Pricing",
+                value: creator?.pricing || "—",
+                icon: "💰",
+                gradient: "from-emerald-50 to-teal-50",
+              },
+              {
+                label: "Platforms",
+                value: platforms.join(", ") || "—",
+                icon: "📱",
+                gradient: "from-purple-50 to-violet-50",
+              },
             ].map((stat, i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl p-5 shadow border"
+                className={`bg-gradient-to-br ${stat.gradient} rounded-2xl p-4 border border-gray-100 shadow-sm`}
               >
-                <div className="text-xl mb-2">{stat.icon}</div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-                <p className="text-lg font-bold">{stat.value}</p>
+                <div className="text-xl mb-1">{stat.icon}</div>
+                <p className="text-xs text-gray-500">{stat.label}</p>
+                <p className="text-lg font-bold text-[#393873] truncate">
+                  {stat.value}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Main */}
+      {/* Main content */}
       <div className="w-full px-4 sm:px-6 lg:px-8 py-10">
         <div className="max-w-4xl mx-auto grid lg:grid-cols-3 gap-6">
-          {/* Left */}
+          {/* Left column */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="reveal bg-white rounded-3xl shadow border p-6">
-              <h2 className="text-xl font-bold mb-3">📝 About Creator</h2>
-              <p className="text-gray-600">{creator.bio}</p>
-            </div>
-
-            <div className="reveal delay-1 bg-white rounded-3xl shadow border p-6">
-              <h2 className="text-xl font-bold mb-4">🎯 Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {creator.skills.map((skill, i) => (
-                  <span
-                    key={i}
-                    className="px-4 py-2 rounded-xl bg-[#5157a1]/10 text-[#393873] font-medium"
-                  >
-                    {skill}
-                  </span>
-                ))}
+            {/* About */}
+            <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-lg">
+                  📝
+                </div>
+                <h2 className="text-lg font-bold text-[#393873]">
+                  About Creator
+                </h2>
               </div>
-            </div>
-
-            <div className="reveal delay-2 bg-white rounded-3xl shadow border p-6">
-              <h2 className="text-xl font-bold mb-4">📂 Past Collaborations</h2>
-              <ul className="space-y-2">
-                {creator.pastWork.map((work, i) => (
-                  <li
-                    key={i}
-                    className="p-3 rounded-xl bg-gray-50 text-gray-700"
-                  >
-                    {work}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Right */}
-          <div className="space-y-6">
-            <div className="reveal delay-1 bg-white rounded-3xl shadow border p-6">
-              <h3 className="font-bold mb-4">Campaign Applied For</h3>
-              <p className="text-gray-700 font-medium">
-                📢 {creator.appliedFor}
+              <p className="text-gray-600 leading-relaxed">
+                {creator?.bio ||
+                  creator?.description ||
+                  "No bio available."}
               </p>
             </div>
 
-            <div className="reveal delay-2 bg-white rounded-3xl shadow border p-6">
-              <h3 className="font-bold mb-4">Take Action</h3>
+            {/* Platforms */}
+            {platforms.length > 0 && (
+              <div className="reveal delay-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/30 flex items-center justify-center text-lg">
+                    📱
+                  </div>
+                  <h2 className="text-lg font-bold text-[#393873]">
+                    Active Platforms
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {platforms.map((p, i) => (
+                    <span
+                      key={i}
+                      className="px-4 py-2 rounded-xl bg-gray-50 text-gray-700 font-medium text-sm border border-gray-200"
+                    >
+                      {p.toLowerCase() === "youtube"
+                        ? "🎬"
+                        : p.toLowerCase() === "instagram"
+                        ? "📸"
+                        : p.toLowerCase() === "twitter"
+                        ? "🐦"
+                        : p.toLowerCase() === "twitch"
+                        ? "🎮"
+                        : "📱"}{" "}
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-              {!actionTaken ? (
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setActionTaken("Accepted")}
-                    className="w-full py-3 rounded-xl bg-green-500 text-white font-semibold hover:shadow-lg"
+            {/* Social links */}
+            {(creator?.instalink || creator?.youtube_url || creator?.twitter_url) && (
+              <div className="reveal delay-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c7eff9]/30 to-[#5157a1]/10 flex items-center justify-center text-lg">
+                    🔗
+                  </div>
+                  <h2 className="text-lg font-bold text-[#393873]">
+                    Social Links
+                  </h2>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    {
+                      label: "Instagram",
+                      url: creator.instalink,
+                      icon: "📸",
+                    },
+                    {
+                      label: "YouTube",
+                      url: creator.youtube_url,
+                      icon: "🎬",
+                    },
+                    {
+                      label: "Twitter",
+                      url: creator.twitter_url,
+                      icon: "🐦",
+                    },
+                  ]
+                    .filter((s) => s.url)
+                    .map((s, i) => (
+                      <a
+                        key={i}
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#5157a1]/5 transition-colors group"
+                      >
+                        <span className="text-lg">{s.icon}</span>
+                        <span className="font-medium text-gray-700 group-hover:text-[#5157a1] transition-colors">
+                          {s.label}
+                        </span>
+                        <span className="ml-auto text-gray-400 text-sm group-hover:translate-x-1 transition-transform">
+                          →
+                        </span>
+                      </a>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right column */}
+          <div className="space-y-6">
+            {/* ── SEND CAMPAIGN CARD ── */}
+            <div className="reveal delay-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center text-lg">
+                  📤
+                </div>
+                <h3 className="font-bold text-[#393873]">
+                  Send Campaign
+                </h3>
+              </div>
+
+              <p className="text-sm text-gray-500 mb-4">
+                Invite this creator to one of your active campaigns.
+              </p>
+
+              {campaigns.length === 0 ? (
+                <div className="text-center p-4 rounded-xl bg-gray-50">
+                  <p className="text-sm text-gray-500 mb-3">
+                    No active campaigns available.
+                  </p>
+                  <Link
+                    to="/sponsor/create-campaign"
+                    className="text-sm text-[#5157a1] font-medium hover:underline"
                   >
-                    ✅ Accept Creator
-                  </button>
-                  <button
-                    onClick={() => setActionTaken("Shortlisted")}
-                    className="w-full py-3 rounded-xl bg-blue-500 text-white font-semibold hover:shadow-lg"
-                  >
-                    ⭐ Shortlist
-                  </button>
-                  <button
-                    onClick={() => setActionTaken("Rejected")}
-                    className="w-full py-3 rounded-xl bg-red-500 text-white font-semibold hover:shadow-lg"
-                  >
-                    ❌ Reject
-                  </button>
+                    Create a campaign first →
+                  </Link>
                 </div>
               ) : (
-                <div className="text-center text-sm text-gray-600">
-                  Action Taken:
-                  <span className="font-bold text-[#5157a1] ml-1">
-                    {actionTaken}
-                  </span>
+                <>
+                  <select
+                    value={selectedCampaign}
+                    onChange={(e) => {
+                      setSelectedCampaign(e.target.value);
+                      setSendResult(null);
+                    }}
+                    className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/30 focus:border-[#5157a1] transition-all mb-3 text-sm"
+                  >
+                    <option value="">Select a campaign...</option>
+                    {campaigns.map((c) => (
+                      <option
+                        key={c.campaign_id}
+                        value={c.campaign_id}
+                      >
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    disabled={!selectedCampaign || sending}
+                    onClick={handleSendCampaign}
+                    className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold transition-all duration-200
+                      ${
+                        !selectedCampaign || sending
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : "bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
+                      }`}
+                  >
+                    {sending ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Sending…
+                      </>
+                    ) : (
+                      <>📤 Send Invitation</>
+                    )}
+                  </button>
+                </>
+              )}
+
+              {/* Result feedback */}
+              {sendResult && (
+                <div
+                  className={`mt-3 p-3 rounded-xl text-sm font-medium ${
+                    sendResult.type === "success"
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : "bg-red-50 text-red-700 border border-red-200"
+                  }`}
+                >
+                  {sendResult.type === "success" ? "✅" : "⚠️"}{" "}
+                  {sendResult.message}
                 </div>
               )}
             </div>
 
-            <div className="text-center text-xs text-gray-400">
+            {/* Creator ID */}
+            <div className="text-center p-3 rounded-xl bg-gray-100 text-xs text-gray-400">
               Creator ID: {id}
             </div>
           </div>
