@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Megaphone, Clock, CheckCircle, XCircle, ClipboardList, Eye, Coins, Search, Mail, Phone, User, MessageCircle, Inbox } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -19,7 +20,7 @@ export default function Applications() {
           id: a.application_id,
           campaign: a.campaign_title,
           sponsor: a.sponsor_name || "—",
-          sponsorLogo: "📢",
+          sponsorLogo: <Megaphone size={20} />,
           status: a.status,
           budget: a.budget ? `₹${Number(a.budget).toLocaleString()}` : "—",
           date: new Date(a.applied_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
@@ -74,7 +75,7 @@ export default function Applications() {
           bg: "bg-amber-50",
           text: "text-amber-600",
           border: "border-amber-200",
-          icon: "⏳",
+          icon: <Clock size={16} />,
           label: "Pending",
         };
       case "accepted":
@@ -82,7 +83,7 @@ export default function Applications() {
           bg: "bg-emerald-50",
           text: "text-emerald-600",
           border: "border-emerald-200",
-          icon: "✅",
+          icon: <CheckCircle size={16} />,
           label: "Accepted",
         };
       case "rejected":
@@ -90,7 +91,7 @@ export default function Applications() {
           bg: "bg-red-50",
           text: "text-red-600",
           border: "border-red-200",
-          icon: "❌",
+          icon: <XCircle size={16} />,
           label: "Rejected",
         };
       default:
@@ -98,7 +99,7 @@ export default function Applications() {
           bg: "bg-gray-50",
           text: "text-gray-600",
           border: "border-gray-200",
-          icon: "📋",
+          icon: <ClipboardList size={16} />,
           label: status,
         };
     }
@@ -165,10 +166,10 @@ export default function Applications() {
               {/* Filter Tabs */}
               <div className="flex gap-2">
                 {[
-                  { key: "all", label: "All Applications", icon: "📋" },
-                  { key: "pending", label: "Pending", icon: "⏳" },
-                  { key: "accepted", label: "Accepted", icon: "✅" },
-                  { key: "rejected", label: "Rejected", icon: "❌" },
+                  { key: "all", label: "All Applications", icon: <ClipboardList size={16} /> },
+                  { key: "pending", label: "Pending", icon: <Clock size={16} /> },
+                  { key: "accepted", label: "Accepted", icon: <CheckCircle size={16} /> },
+                  { key: "rejected", label: "Rejected", icon: <XCircle size={16} /> },
                 ].map((filter) => (
                   <button
                     key={filter.key}
@@ -256,9 +257,9 @@ export default function Applications() {
                             onClick={() => handleViewContact(app)}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#5157a1] to-[#393873] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#5157a1]/25 transition-all duration-300 transform hover:-translate-y-0.5"
                           >
-                            <span>👁️</span>
+                            <Eye size={16} />
                             View Contact
-                            <span className="text-xs opacity-75">(5 🪙)</span>
+                            <span className="text-xs opacity-75 flex items-center gap-1">(<Coins size={12} />5)</span>
                           </button>
                         ) : (
                           <span className="text-gray-400 text-sm flex items-center gap-1">
@@ -325,9 +326,9 @@ export default function Applications() {
                       onClick={() => handleViewContact(app)}
                       className="w-full py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
                     >
-                      <span>👁️</span>
+                      <Eye size={16} />
                       View Contact
-                      <span className="text-sm opacity-75">(5 🪙)</span>
+                      <span className="text-sm opacity-75 flex items-center gap-1">(<Coins size={12} />5)</span>
                     </button>
                   ) : (
                     <div className="w-full py-3 rounded-xl bg-gray-100 text-gray-400 font-medium text-center flex items-center justify-center gap-2">
@@ -346,7 +347,7 @@ export default function Applications() {
           {filteredApplications.length === 0 && (
             <div className="reveal delay-2 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center text-3xl">
-                📭
+                <Inbox size={32} />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No applications found</h3>
               <p className="text-gray-500 mb-6">You don't have any {activeFilter !== "all" ? activeFilter : ""} applications yet.</p>
@@ -354,7 +355,7 @@ export default function Applications() {
                 to="/creator/browse"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all"
               >
-                <span>🔍</span>
+                <Search size={16} />
                 Browse Campaigns
               </Link>
             </div>
@@ -396,7 +397,7 @@ export default function Applications() {
             <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-                  📧
+                  <Mail size={20} />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Email</p>
@@ -405,7 +406,7 @@ export default function Applications() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-                  📞
+                  <Phone size={20} />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Phone</p>
@@ -414,7 +415,7 @@ export default function Applications() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-                  👤
+                  <User size={20} />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Contact Person</p>
@@ -425,7 +426,7 @@ export default function Applications() {
 
             {/* Token Deduction Notice */}
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
-              <span className="text-xl">🪙</span>
+              <Coins size={20} />
               <div>
                 <p className="font-medium text-amber-800 text-sm">5 Tokens Deducted</p>
                 <p className="text-amber-600 text-xs">This contact information has been unlocked.</p>
@@ -441,7 +442,7 @@ export default function Applications() {
                 Close
               </button>
               <button className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                <span>💬</span>
+                <MessageCircle size={16} />
                 Start Chat
               </button>
             </div>

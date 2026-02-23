@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { AlertTriangle, Zap, HelpCircle } from "lucide-react";
 
 /**
  * Reusable confirmation modal.
@@ -54,7 +55,7 @@ export default function ConfirmModal({
       : "bg-[#5157a1]/10 text-[#5157a1]";
 
   const icon =
-    variant === "danger" ? "⚠️" : variant === "warning" ? "⚡" : "❓";
+    variant === "danger" ? <AlertTriangle size={24} /> : variant === "warning" ? <Zap size={24} /> : <HelpCircle size={24} />;
 
   return (
     <div

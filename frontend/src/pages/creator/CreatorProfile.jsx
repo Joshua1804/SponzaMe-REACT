@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { MapPin, Users, Target, Star, CheckCircle, Pencil, FileText, ClipboardList, DollarSign, Smartphone, BarChart3, Search, Settings, Check, Coins, Lightbulb, Save, Youtube, Camera, Twitter } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -29,9 +30,9 @@ export default function CreatorProfile() {
       completionRate: "0%",
     },
     social: {
-      youtube: { url: p.youtube_url || "#", followers: "—", icon: "📺" },
-      instagram: { url: p.instalink || "#", followers: "—", icon: "📷" },
-      twitter: { url: p.twitter_url || "#", followers: "—", icon: "🐦" },
+      youtube: { url: p.youtube_url || "#", followers: "—", icon: <Youtube size={24} /> },
+      instagram: { url: p.instalink || "#", followers: "—", icon: <Camera size={24} /> },
+      twitter: { url: p.twitter_url || "#", followers: "—", icon: <Twitter size={24} /> },
     },
   });
 
@@ -103,7 +104,7 @@ export default function CreatorProfile() {
   );
 
   if (error && !profile) return (
-    <div className="pt-16 bg-gray-50 min-h-screen"><Navbar /><div className="flex items-center justify-center h-[60vh] flex-col gap-4"><p className="text-red-500 text-lg">⚠️ {error}</p><button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-[#5157a1] text-white">Retry</button></div><Footer /></div>
+    <div className="pt-16 bg-gray-50 min-h-screen"><Navbar /><div className="flex items-center justify-center h-[60vh] flex-col gap-4"><p className="text-red-500 text-lg flex items-center gap-2"><AlertTriangle size={20} /> {error}</p><button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-[#5157a1] text-white">Retry</button></div><Footer /></div>
   );
 
   return (
@@ -136,7 +137,7 @@ export default function CreatorProfile() {
                   {profile.initials}
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-emerald-500 border-4 border-[#393873] flex items-center justify-center">
-                  <span className="text-white text-xs">✓</span>
+                  <Check size={14} className="text-white" />
                 </div>
               </div>
 
@@ -158,17 +159,17 @@ export default function CreatorProfile() {
                     </span>
                   ))}
                   <span className="px-3 py-1 rounded-full bg-[#c7eff9]/20 text-[#c7eff9] text-sm font-medium border border-[#c7eff9]/30 flex items-center gap-1">
-                    📍 {profile.location}
+                    <MapPin size={14} className="inline" /> {profile.location}
                   </span>
                 </div>
 
                 {/* Stats Row */}
                 <div className="reveal delay-1 flex flex-wrap justify-center lg:justify-start gap-4">
                   {[
-                    { label: "Followers", value: profile.stats.followers, icon: "👥" },
-                    { label: "Campaigns", value: profile.stats.campaigns, icon: "🎯" },
-                    { label: "Rating", value: profile.stats.rating, icon: "⭐" },
-                    { label: "Completion", value: profile.stats.completionRate, icon: "✅" },
+                    { label: "Followers", value: profile.stats.followers, icon: <Users size={16} /> },
+                    { label: "Campaigns", value: profile.stats.campaigns, icon: <Target size={16} /> },
+                    { label: "Rating", value: profile.stats.rating, icon: <Star size={16} /> },
+                    { label: "Completion", value: profile.stats.completionRate, icon: <CheckCircle size={16} /> },
                   ].map((stat, i) => (
                     <div key={i} className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 px-4 py-3 text-center min-w-[90px]">
                       <p className="text-2xl font-bold text-white mb-0.5">{stat.value}</p>
@@ -186,7 +187,7 @@ export default function CreatorProfile() {
                 onClick={() => setIsEditing(!isEditing)}
                 className="reveal delay-2 px-6 py-3 rounded-xl bg-white text-[#5157a1] font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2"
               >
-                <span>✏️</span>
+                <Pencil size={18} />
                 Edit Profile
               </button>
             </div>
@@ -200,7 +201,7 @@ export default function CreatorProfile() {
           <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-[#393873] flex items-center gap-2">
-                <span>✏️</span> Edit Your Profile
+                <Pencil size={20} className="inline" /> Edit Your Profile
               </h2>
               <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
             </div>
@@ -243,7 +244,7 @@ export default function CreatorProfile() {
                 onClick={handleSaveProfile}
                 className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
               >
-                💾 Save Profile
+                <Save size={18} className="inline" /> Save Profile
               </button>
               <button
                 onClick={() => setIsEditing(false)}
@@ -267,7 +268,7 @@ export default function CreatorProfile() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                      📝
+                      <FileText size={16} />
                     </span>
                     About Me
                   </h2>
@@ -281,16 +282,16 @@ export default function CreatorProfile() {
               <div className="reveal delay-1 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
                   <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                    📋
+                    <ClipboardList size={16} />
                   </span>
                   Profile Details
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-6">
                   {[
-                    { label: "Niche", value: profile.niches.join(", "), icon: "🎯" },
-                    { label: "Pricing Range", value: profile.pricing, icon: "💰" },
-                    { label: "Platforms", value: profile.platforms.join(", "), icon: "📱" },
-                    { label: "Location", value: profile.location, icon: "📍" },
+                    { label: "Niche", value: profile.niches.join(", "), icon: <Target size={20} /> },
+                    { label: "Pricing Range", value: profile.pricing, icon: <DollarSign size={20} /> },
+                    { label: "Platforms", value: profile.platforms.join(", "), icon: <Smartphone size={20} /> },
+                    { label: "Location", value: profile.location, icon: <MapPin size={20} /> },
                   ].map((detail, i) => (
                     <div key={i} className="group">
                       <div className="flex items-start gap-3">
@@ -311,7 +312,7 @@ export default function CreatorProfile() {
               <div className="reveal delay-2 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
                   <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                    📊
+                    <BarChart3 size={16} />
                   </span>
                   Platform Performance
                 </h2>
@@ -348,10 +349,10 @@ export default function CreatorProfile() {
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="space-y-3">
                   {[
-                    { label: "Browse Campaigns", icon: "🔍", link: "/creator/campaigns", color: "from-blue-500 to-indigo-500" },
-                    { label: "My Applications", icon: "📄", link: "/creator/applications", color: "from-purple-500 to-pink-500" },
-                    { label: "Dashboard", icon: "📊", link: "/creator/dashboard", color: "from-emerald-500 to-teal-500" },
-                    { label: "Settings", icon: "⚙️", link: "#", color: "from-gray-500 to-gray-600" },
+                    { label: "Browse Campaigns", icon: <Search size={20} />, link: "/creator/campaigns", color: "from-blue-500 to-indigo-500" },
+                    { label: "My Applications", icon: <FileText size={20} />, link: "/creator/applications", color: "from-purple-500 to-pink-500" },
+                    { label: "Dashboard", icon: <BarChart3 size={20} />, link: "/creator/dashboard", color: "from-emerald-500 to-teal-500" },
+                    { label: "Settings", icon: <Settings size={20} />, link: "#", color: "from-gray-500 to-gray-600" },
                   ].map((action, i) => (
                     <Link
                       key={i}
@@ -376,7 +377,7 @@ export default function CreatorProfile() {
               <div className="reveal delay-2 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg">
-                    <span className="text-white text-xl">✓</span>
+                    <Check size={20} className="text-white" />
                   </div>
                   <div>
                     <h3 className="font-bold text-emerald-800">Verified Creator</h3>
@@ -392,7 +393,7 @@ export default function CreatorProfile() {
               <div className="reveal delay-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg">
-                    🪙
+                    <Coins size={24} />
                   </div>
                   <div>
                     <p className="text-sm text-amber-600">Token Balance</p>
@@ -420,7 +421,7 @@ export default function CreatorProfile() {
                   </span>
                 </div>
                 <div className="mt-4 space-y-2">
-                  <p className="text-xs text-gray-500">💡 Tips to improve:</p>
+                  <p className="text-xs text-gray-500 flex items-center gap-1"><Lightbulb size={12} /> Tips to improve:</p>
                   <ul className="text-xs text-gray-600 space-y-1">
                     <li className="flex items-center gap-2">
                       <span className="text-amber-500">○</span>

@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { CheckCircle, AlertTriangle, Info } from "lucide-react";
 
 /* ── Toast container + hook ── */
 
 const ICONS = {
-  success: "✅",
-  error: "⚠️",
-  info: "ℹ️",
+  success: <CheckCircle size={20} />,
+  error: <AlertTriangle size={20} />,
+  info: <Info size={20} />,
 };
 
 const COLORS = {

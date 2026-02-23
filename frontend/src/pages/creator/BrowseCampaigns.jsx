@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Megaphone, Search, Building2, Calendar, Users } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -39,7 +40,7 @@ export default function BrowseCampaigns() {
           budget: c.budget ? `₹${Number(c.budget).toLocaleString()}` : "—",
           desc: c.description || "",
           link: `/creator/campaign/${c.campaign_id}`,
-          icon: "📢",
+          icon: <Megaphone size={24} />,
           tags: [c.niche, ...(c.platforms ? c.platforms.split(",") : [])].filter(Boolean),
           deadline: c.deadline || "—",
           applicants: c.applicant_count || 0,
@@ -65,7 +66,7 @@ export default function BrowseCampaigns() {
           <div className="max-w-7xl mx-auto">
             <div className="reveal text-center max-w-2xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
-                <span className="text-lg">🔍</span>
+                <Search size={20} />
                 <span className="text-sm font-medium text-white/90">Discover Opportunities</span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold text-white mb-4">
@@ -197,7 +198,7 @@ export default function BrowseCampaigns() {
                   {campaign.title}
                 </h3>
                 <p className="text-sm text-gray-500 mb-3 flex items-center gap-1">
-                  <span>🏢</span> {campaign.sponsor}
+                  <Building2 size={16} className="inline" /> {campaign.sponsor}
                 </p>
 
                 <p className="text-gray-600 flex-1 leading-relaxed text-sm mb-4">
@@ -219,10 +220,10 @@ export default function BrowseCampaigns() {
                 {/* Meta Info */}
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4 pb-4 border-b border-gray-100">
                   <span className="flex items-center gap-1">
-                    <span>📅</span> {campaign.deadline}
+                    <Calendar size={14} className="inline" /> {campaign.deadline}
                   </span>
                   <span className="flex items-center gap-1">
-                    <span>👥</span> {campaign.applicants} applicants
+                    <Users size={14} className="inline" /> {campaign.applicants} applicants
                   </span>
                 </div>
 

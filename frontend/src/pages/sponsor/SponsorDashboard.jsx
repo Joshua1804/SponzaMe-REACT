@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Megaphone, Rocket, Users, Search, Coins, AlertTriangle, Building2, MapPin, DollarSign, Target, Smartphone, Mail, Sparkles } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -70,28 +71,28 @@ export default function SponsorDashboard() {
     {
       label: "Campaigns Posted",
       value: String(dashData.total_campaigns || 0),
-      icon: "📢",
+      icon: <Megaphone size={24} />,
       gradient: "from-[#5157a1]/10 to-[#c7eff9]/30",
       link: "/sponsor/my-campaigns",
     },
     {
       label: "Active Campaigns",
       value: String(dashData.active_campaigns || 0),
-      icon: "🚀",
+      icon: <Rocket size={24} />,
       gradient: "from-[#e7bdd3]/30 to-[#5157a1]/10",
       link: "/sponsor/my-campaigns",
     },
     {
       label: "Total Applicants",
       value: String(dashData.total_applicants || 0),
-      icon: "👥",
+      icon: <Users size={24} />,
       gradient: "from-[#c7eff9]/30 to-[#e7bdd3]/30",
       link: "/sponsor/my-campaigns",
     },
     {
       label: "Browse Creators",
       value: "→",
-      icon: "🔍",
+      icon: <Search size={24} />,
       gradient: "from-[#5157a1]/10 to-[#c7eff9]/20",
       link: "/sponsor/creators",
     },
@@ -141,7 +142,7 @@ export default function SponsorDashboard() {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg shadow-orange-500/20">
-                    🪙
+                    <Coins size={24} />
                   </div>
                   <div>
                     <p className="text-sm text-white/70">
@@ -162,7 +163,7 @@ export default function SponsorDashboard() {
       {error && (
         <div className="w-full px-4 sm:px-6 lg:px-8 mt-4">
           <div className="max-w-7xl mx-auto p-4 rounded-2xl bg-red-50 border border-red-200 flex items-center gap-3">
-            <span className="text-xl">⚠️</span>
+            <AlertTriangle size={20} />
             <p className="text-sm text-red-600 flex-1">{error}</p>
             <button onClick={() => window.location.reload()} className="text-sm text-red-500 font-medium hover:underline">Retry</button>
           </div>
@@ -219,7 +220,7 @@ export default function SponsorDashboard() {
             <div className="flex items-center gap-4 mb-6">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#5157a1] to-[#393873] flex items-center justify-center text-2xl text-white font-bold shadow-lg shadow-[#5157a1]/20">
                 {profile.company_name?.charAt(0)?.toUpperCase() ||
-                  "🏢"}
+                  "?"}
               </div>
               <div>
                 <h3 className="font-bold text-[#393873]">
@@ -234,27 +235,27 @@ export default function SponsorDashboard() {
             <div className="space-y-3 mb-6">
               {[
                 {
-                  icon: "📍",
+                  icon: <MapPin size={16} />,
                   value: profile.location,
                   label: "Location",
                 },
                 {
-                  icon: "💰",
+                  icon: <DollarSign size={16} />,
                   value: profile.budget_range,
                   label: "Budget Range",
                 },
                 {
-                  icon: "🎯",
+                  icon: <Target size={16} />,
                   value: profile.hiring_for,
                   label: "Hiring Focus",
                 },
                 {
-                  icon: "📱",
+                  icon: <Smartphone size={16} />,
                   value: profile.platforms,
                   label: "Platforms",
                 },
                 {
-                  icon: "✉️",
+                  icon: <Mail size={16} />,
                   value: profile.email,
                   label: "Email",
                 },
@@ -317,7 +318,7 @@ export default function SponsorDashboard() {
             ) : campaigns.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-3xl mb-4">
-                  📢
+                  <Megaphone size={28} />
                 </div>
                 <h3 className="font-bold text-[#393873] mb-2">
                   No campaigns yet
@@ -329,7 +330,7 @@ export default function SponsorDashboard() {
                   to="/sponsor/create-campaign"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
                 >
-                  ✨ Create Campaign
+                  <Sparkles size={16} className="inline" /> Create Campaign
                 </Link>
               </div>
             ) : (
@@ -392,28 +393,28 @@ export default function SponsorDashboard() {
             {
               title: "Post Campaign",
               desc: "Create a new sponsorship campaign",
-              icon: "✨",
+              icon: <Sparkles size={24} />,
               link: "/sponsor/create-campaign",
               gradient: "from-[#5157a1]/5 to-[#c7eff9]/20",
             },
             {
               title: "Browse Creators",
               desc: "Find the perfect creator match",
-              icon: "🔍",
+              icon: <Search size={24} />,
               link: "/sponsor/creators",
               gradient: "from-[#c7eff9]/20 to-[#e7bdd3]/20",
             },
             {
               title: "My Campaigns",
               desc: "View and manage your campaigns",
-              icon: "📢",
+              icon: <Megaphone size={24} />,
               link: "/sponsor/my-campaigns",
               gradient: "from-[#e7bdd3]/20 to-[#5157a1]/5",
             },
             {
               title: "Buy Tokens",
               desc: "Purchase tokens to unlock features",
-              icon: "🪙",
+              icon: <Coins size={24} />,
               link: "/user/shop",
               gradient: "from-amber-50 to-orange-50",
             },
