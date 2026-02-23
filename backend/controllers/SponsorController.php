@@ -84,15 +84,36 @@ class SponsorController
             return;
         }
 
-        $campaign = Campaign::create($userId, $data);
-        if (!$campaign) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Failed to create campaign. Sponsor profile may be missing.']);
-            return;
+        // Sanitise budget to a plain number (strip ₹, commas, spaces)
+        if (!empty($data['budget'])) {
+            $data['budget'] = preg_replace('/[^0-9.]/', '', $data['budget']);
+            if ($data['budget'] === '') {
+                $data['budget'] = null;
+            }
         }
 
-        http_response_code(201);
-        echo json_encode(['message' => 'Campaign created.', 'campaign' => $campaign]);
+        // Sanitise deadline – must be YYYY-MM-DD or null
+        if (!empty($data['deadline'])) {
+            $d = date('Y-m-d', strtotime($data['deadline']));
+            $data['deadline'] = ($d && $d !== '1970-01-01') ? $d : null;
+        } else {
+            $data['deadline'] = null;
+        }
+
+        try {
+            $campaign = Campaign::create($userId, $data);
+            if (!$campaign) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Failed to create campaign. Sponsor profile may be missing.']);
+                return;
+            }
+
+            http_response_code(201);
+            echo json_encode(['message' => 'Campaign created.', 'campaign' => $campaign]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -199,5 +220,195 @@ class SponsorController
         }
 
         echo json_encode(['creator' => $profile]);
+    }
+
+    /**
+     * POST /api/sponsor/send-campaign
+     * Body: { campaign_id, creator_user_id }
+     * Inserts into applications with status = 'invited'
+     */
+    public static function sendCampaign(): void
+    {
+        $userId = $_SESSION['user_id'];
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $campaignId = (int) ($data['campaign_id'] ?? 0);
+        $creatorUserId = (int) ($data['creator_user_id'] ?? 0);
+
+        if (!$campaignId || !$creatorUserId) {
+            http_response_code(400);
+            echo json_encode(['error' => 'campaign_id and creator_user_id are required.']);
+            return;
+        }
+
+        $db = getDB();
+
+        // Verify campaign belongs to this sponsor
+        $stmt = $db->prepare(
+            "SELECT c.campaign_id FROM campaigns c
+             JOIN sponsor_profiles sp ON c.sponsor_id = sp.sponsor_id
+             WHERE c.campaign_id = :cid AND sp.user_id = :uid AND c.status = 'active'"
+        );
+        $stmt->execute(['cid' => $campaignId, 'uid' => $userId]);
+        if (!$stmt->fetch()) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Campaign not found or not active.']);
+            return;
+        }
+
+        // Get creator_id from creator_profiles using user_id
+        $stmt = $db->prepare(
+            "SELECT cp.creator_id FROM creator_profiles cp
+             JOIN users u ON cp.user_id = u.user_id
+             WHERE u.user_id = :uid AND u.role = 'creator'"
+        );
+        $stmt->execute(['uid' => $creatorUserId]);
+        $creator = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$creator) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Creator not found.']);
+            return;
+        }
+
+        $creatorId = $creator['creator_id'];
+
+        // Check if already invited or applied
+        $stmt = $db->prepare(
+            "SELECT application_id, status FROM applications
+             WHERE campaign_id = :cid AND creator_id = :crid"
+        );
+        $stmt->execute(['cid' => $campaignId, 'crid' => $creatorId]);
+        $existing = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($existing) {
+            http_response_code(409);
+            echo json_encode([
+                'error' => 'This creator already has an application/invitation for this campaign.',
+                'existing_status' => $existing['status']
+            ]);
+            return;
+        }
+
+        // Insert invitation
+        $stmt = $db->prepare(
+            "INSERT INTO applications (campaign_id, creator_id, status) VALUES (:cid, :crid, 'invited')"
+        );
+        $stmt->execute(['cid' => $campaignId, 'crid' => $creatorId]);
+
+        http_response_code(201);
+        echo json_encode([
+            'message' => 'Campaign invitation sent successfully.',
+            'application_id' => $db->lastInsertId()
+        ]);
+    }
+
+    /* ───────────────────────────────────────────────
+     *  CAMPAIGN CRUD – single-resource endpoints
+     * ─────────────────────────────────────────────── */
+
+    /**
+     * Verify the given campaign belongs to the logged-in sponsor.
+     * Returns the campaign row or null.
+     */
+    private static function ownedCampaign(int $campaignId): ?array
+    {
+        $userId = $_SESSION['user_id'];
+        $campaign = Campaign::findById($campaignId);
+        if (!$campaign) return null;
+
+        // Check ownership via sponsor_profiles
+        $db = getDB();
+        $stmt = $db->prepare(
+            "SELECT sponsor_id FROM sponsor_profiles WHERE user_id = :uid"
+        );
+        $stmt->execute(['uid' => $userId]);
+        $sponsor = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$sponsor || (int)$campaign['sponsor_id'] !== (int)$sponsor['sponsor_id']) {
+            return null;
+        }
+
+        return $campaign;
+    }
+
+    /**
+     * GET /api/sponsor/campaign/{id}
+     */
+    public static function getCampaign(int $id): void
+    {
+        $campaign = self::ownedCampaign($id);
+
+        if (!$campaign) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Campaign not found.']);
+            return;
+        }
+
+        $campaign['applicant_count'] = Campaign::countApplicants($id);
+        echo json_encode(['campaign' => $campaign]);
+    }
+
+    /**
+     * PUT /api/sponsor/campaign/{id}
+     * Body: { title, description, niche, budget, deadline, platforms, requirements, deliverables }
+     */
+    public static function updateCampaign(int $id): void
+    {
+        $campaign = self::ownedCampaign($id);
+
+        if (!$campaign) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Campaign not found.']);
+            return;
+        }
+
+        if ($campaign['status'] === 'closed') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Cannot edit a closed campaign.']);
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data || empty($data['title'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Campaign title is required.']);
+            return;
+        }
+
+        // Sanitise budget
+        if (!empty($data['budget'])) {
+            $data['budget'] = preg_replace('/[^0-9.]/', '', $data['budget']);
+            if ($data['budget'] === '') $data['budget'] = null;
+        }
+
+        // Sanitise deadline
+        if (!empty($data['deadline'])) {
+            $d = date('Y-m-d', strtotime($data['deadline']));
+            $data['deadline'] = ($d && $d !== '1970-01-01') ? $d : null;
+        } else {
+            $data['deadline'] = null;
+        }
+
+        Campaign::update($id, $data);
+        $updated = Campaign::findById($id);
+        echo json_encode(['message' => 'Campaign updated.', 'campaign' => $updated]);
+    }
+
+    /**
+     * DELETE /api/sponsor/campaign/{id}
+     */
+    public static function deleteCampaign(int $id): void
+    {
+        $campaign = self::ownedCampaign($id);
+
+        if (!$campaign) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Campaign not found.']);
+            return;
+        }
+
+        Campaign::delete($id);
+        echo json_encode(['message' => 'Campaign deleted.']);
     }
 }

@@ -44,6 +44,21 @@ function handleSponsorRoutes(string $method, string $action, ?int $id = null, ?s
             break;
 
         case 'campaign':
+            // GET /api/sponsor/campaign/{id} — single campaign detail
+            if ($id !== null && $subAction === null && $method === 'GET') {
+                SponsorController::getCampaign($id);
+                return;
+            }
+            // PUT /api/sponsor/campaign/{id} — update campaign fields
+            if ($id !== null && $subAction === null && $method === 'PUT') {
+                SponsorController::updateCampaign($id);
+                return;
+            }
+            // DELETE /api/sponsor/campaign/{id}
+            if ($id !== null && $subAction === null && $method === 'DELETE') {
+                SponsorController::deleteCampaign($id);
+                return;
+            }
             // PUT /api/sponsor/campaign/{id}/status
             if ($id !== null && $subAction === 'status' && $method === 'PUT') {
                 SponsorController::updateCampaignStatus($id);
@@ -74,6 +89,13 @@ function handleSponsorRoutes(string $method, string $action, ?int $id = null, ?s
         case 'creator':
             if ($id !== null && $method === 'GET') {
                 SponsorController::creatorDetail($id);
+                return;
+            }
+            break;
+
+        case 'send-campaign':
+            if ($method === 'POST') {
+                SponsorController::sendCampaign();
                 return;
             }
             break;
