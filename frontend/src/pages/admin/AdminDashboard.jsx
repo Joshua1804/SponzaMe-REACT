@@ -3,6 +3,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import api from "../../api";
+import { Hand } from "lucide-react";
 
 /* -------------------- DATA defaults -------------------- */
 const COLORS = ["#c7eff9", "#e7bdd3", "#5157a1", "#393873"];
@@ -79,7 +80,7 @@ export default function AdminDashboard() {
           <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-5xl font-extrabold text-[#393873] leading-tight">
-                Hi, Admin 👋
+                Hi, Admin <Hand size={36} className="inline text-[#5157a1]" />
               </h1>
               <p className="text-[#5157a1] mt-2 text-lg">
                 Dashboard overview for SponzaMe

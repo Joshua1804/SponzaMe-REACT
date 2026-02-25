@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import ConfirmModal from "../../components/ConfirmModal";
 import { ToastContainer, useToast } from "../../components/Toast";
 import api from "../../api";
+import { Megaphone, Sparkles, Search, AlertTriangle, Smartphone, DollarSign, CalendarDays, Clock, Pencil, Users, Trash2 } from "lucide-react";
 
 export default function ManageCampaigns() {
   const navigate = useNavigate();
@@ -175,8 +176,8 @@ export default function ManageCampaigns() {
 
             <div className="reveal flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                  📢
+                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                  <Megaphone size={24} className="text-white" />
                 </div>
                 <div>
                   <h1 className="text-3xl lg:text-4xl font-bold text-white">
@@ -196,7 +197,7 @@ export default function ManageCampaigns() {
                 to="/sponsor/create-campaign"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#5157a1] font-semibold shadow-xl hover:-translate-y-1 hover:shadow-2xl transition-all"
               >
-                <span>✨</span> New Campaign
+                <Sparkles size={16} /> New Campaign
               </Link>
             </div>
           </div>
@@ -219,10 +220,9 @@ export default function ManageCampaigns() {
                   key={t.key}
                   onClick={() => setFilter(t.key)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
-                    ${
-                      filter === t.key
-                        ? "bg-white text-[#5157a1] shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
+                    ${filter === t.key
+                      ? "bg-white text-[#5157a1] shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   {t.label}
@@ -236,7 +236,7 @@ export default function ManageCampaigns() {
             {/* Search */}
             <div className="flex-1 relative sm:max-w-xs ml-auto">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                🔍
+                <Search size={16} />
               </span>
               <input
                 type="text"
@@ -275,8 +275,8 @@ export default function ManageCampaigns() {
         {/* Error */}
         {error && !loading && (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center text-3xl mb-4">
-              ⚠️
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+              <AlertTriangle size={28} className="text-red-500" />
             </div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">
               Something went wrong
@@ -294,8 +294,8 @@ export default function ManageCampaigns() {
         {/* Empty */}
         {!loading && !error && campaigns.length === 0 && (
           <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-4xl mb-4">
-              📢
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center mb-4">
+              <Megaphone size={36} className="text-[#5157a1]" />
             </div>
             <h3 className="text-xl font-bold text-[#393873] mb-2">
               No Campaigns Yet
@@ -308,7 +308,7 @@ export default function ManageCampaigns() {
               to="/sponsor/create-campaign"
               className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold hover:shadow-xl hover:shadow-[#5157a1]/20 hover:-translate-y-0.5 transition-all"
             >
-              ✨ Create Campaign
+              <Sparkles size={16} className="inline" /> Create Campaign
             </Link>
           </div>
         )}
@@ -363,18 +363,18 @@ export default function ManageCampaigns() {
                       <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
                         {campaign.platforms && (
                           <span className="flex items-center gap-1">
-                            📱 {campaign.platforms}
+                            <Smartphone size={14} className="inline" /> {campaign.platforms}
                           </span>
                         )}
                         {campaign.budget && (
                           <span className="flex items-center gap-1">
-                            💰 ₹
+                            <DollarSign size={14} className="inline" /> ₹
                             {Number(campaign.budget).toLocaleString()}
                           </span>
                         )}
                         {campaign.deadline && (
                           <span className="flex items-center gap-1">
-                            📅 Due:{" "}
+                            <CalendarDays size={14} className="inline" /> Due:{" "}
                             {new Date(
                               campaign.deadline
                             ).toLocaleDateString()}
@@ -382,7 +382,7 @@ export default function ManageCampaigns() {
                         )}
                         {campaign.created_at && (
                           <span className="flex items-center gap-1">
-                            🕐{" "}
+                            <Clock size={14} className="inline" />{" "}
                             {new Date(
                               campaign.created_at
                             ).toLocaleDateString()}
@@ -423,10 +423,9 @@ export default function ManageCampaigns() {
                           )
                         }
                         className={`px-3 py-2 rounded-xl text-sm border transition-all focus:outline-none focus:ring-2 focus:ring-[#5157a1]/20
-                          ${
-                            isClosed || isUpdating
-                              ? "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
-                              : "bg-white border-gray-200 hover:border-gray-300"
+                          ${isClosed || isUpdating
+                            ? "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
+                            : "bg-white border-gray-200 hover:border-gray-300"
                           }`}
                       >
                         <option value="active">Active</option>
@@ -438,7 +437,7 @@ export default function ManageCampaigns() {
                         to={`/sponsor/campaign/${campaign.campaign_id}`}
                         className="px-4 py-2 rounded-xl font-medium text-sm bg-[#5157a1]/10 text-[#5157a1] hover:bg-[#5157a1]/20 transition-all duration-200"
                       >
-                        ✏️ View / Edit
+                        <Pencil size={14} className="inline" /> View / Edit
                       </Link>
 
                       <button
@@ -449,7 +448,7 @@ export default function ManageCampaigns() {
                         }
                         className="px-4 py-2 rounded-xl font-medium text-sm bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
                       >
-                        👥 Applicants
+                        <Users size={14} className="inline" /> Applicants
                       </button>
 
                       <button
@@ -457,7 +456,7 @@ export default function ManageCampaigns() {
                         disabled={deletingId === campaign.campaign_id}
                         className="px-4 py-2 rounded-xl font-medium text-sm bg-red-50 text-red-500 border border-red-200 hover:bg-red-100 transition-all duration-200 disabled:opacity-50"
                       >
-                        🗑️ Delete
+                        <Trash2 size={14} className="inline" /> Delete
                       </button>
                     </div>
                   </div>

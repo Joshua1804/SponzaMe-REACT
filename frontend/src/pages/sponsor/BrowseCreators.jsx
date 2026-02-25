@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
+import { Handshake, Search, AlertTriangle, Users, MapPin } from "lucide-react";
 
 export default function BrowseCreators() {
   const [creators, setCreators] = useState([]);
@@ -104,7 +105,7 @@ export default function BrowseCreators() {
           <div className="max-w-7xl mx-auto text-center">
             <div className="reveal max-w-2xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
-                <span className="text-lg">🤝</span>
+                <Handshake size={18} className="text-white" />
                 <span className="text-sm font-medium text-white/90">
                   Discover Talent
                 </span>
@@ -131,7 +132,7 @@ export default function BrowseCreators() {
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="sm:col-span-2 relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                  🔍
+                  <Search size={16} />
                 </span>
                 <input
                   type="text"
@@ -203,8 +204,8 @@ export default function BrowseCreators() {
           {/* Error */}
           {error && !loading && (
             <div className="text-center py-16">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center text-3xl mb-4">
-                ⚠️
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+                <AlertTriangle size={28} className="text-red-500" />
               </div>
               <h3 className="font-bold text-gray-700 mb-2">
                 Failed to load creators
@@ -222,8 +223,8 @@ export default function BrowseCreators() {
           {/* Empty */}
           {!loading && !error && creators.length === 0 && (
             <div className="text-center py-16">
-              <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-4xl mb-4">
-                👥
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center mb-4">
+                <Users size={36} className="text-[#5157a1]" />
               </div>
               <h3 className="text-xl font-bold text-[#393873] mb-2">
                 No Creators Yet
@@ -237,8 +238,8 @@ export default function BrowseCreators() {
           {/* No filter results */}
           {!loading && !error && creators.length > 0 && filtered.length === 0 && (
             <div className="text-center py-16">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center text-3xl mb-4">
-                🔍
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                <Search size={28} className="text-gray-500" />
               </div>
               <h3 className="font-bold text-gray-700 mb-2">
                 No creators match your filters
@@ -291,7 +292,7 @@ export default function BrowseCreators() {
                             </h3>
                             {creator.location && (
                               <p className="text-xs text-gray-500">
-                                📍 {creator.location}
+                                <MapPin size={12} className="inline" /> {creator.location}
                               </p>
                             )}
                           </div>

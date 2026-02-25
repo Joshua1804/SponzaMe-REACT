@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Megaphone, Clock, CheckCircle, XCircle, ClipboardList, Eye, Coins, Search, Mail, Phone, User, MessageCircle, Inbox } from "lucide-react";
+import { Megaphone, Clock, CheckCircle, XCircle, ClipboardList, Eye, Coins, Search, Mail, Phone, User, MessageCircle, Inbox, X } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -379,7 +379,7 @@ export default function Applications() {
               onClick={() => setShowContactModal(false)}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
             >
-              ✕
+              <X size={16} />
             </button>
 
             {/* Header */}

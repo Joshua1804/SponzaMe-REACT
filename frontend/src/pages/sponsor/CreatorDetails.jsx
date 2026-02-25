@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
+import { AlertTriangle, MapPin, Target, Users, DollarSign, Smartphone, FileText, LinkIcon, Camera, Youtube, Twitter, Gamepad2, Send, CheckCircle } from "lucide-react";
 
 export default function CreatorDetails() {
   const { id } = useParams();
@@ -115,8 +116,8 @@ export default function CreatorDetails() {
       <div className="bg-gray-50 min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center h-[60vh] flex-col gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">
-            ⚠️
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center">
+            <AlertTriangle size={28} className="text-red-500" />
           </div>
           <p className="text-red-500">{error}</p>
           <Link
@@ -170,12 +171,12 @@ export default function CreatorDetails() {
                 <div className="flex flex-wrap items-center gap-3 mt-2">
                   {creator?.location && (
                     <span className="px-3 py-1 rounded-full bg-[#c7eff9]/20 text-[#c7eff9] text-sm font-medium border border-[#c7eff9]/30">
-                      📍 {creator.location}
+                      <MapPin size={14} className="inline" /> {creator.location}
                     </span>
                   )}
                   {creator?.niche && (
                     <span className="px-3 py-1 rounded-full bg-white/10 text-white/90 text-sm font-medium border border-white/20">
-                      🎯 {creator.niche}
+                      <Target size={14} className="inline" /> {creator.niche}
                     </span>
                   )}
                 </div>
@@ -193,19 +194,19 @@ export default function CreatorDetails() {
               {
                 label: "Followers",
                 value: creator?.followers || "—",
-                icon: "👥",
+                icon: <Users size={20} className="text-[#5157a1]" />,
                 gradient: "from-blue-50 to-indigo-50",
               },
               {
                 label: "Pricing",
                 value: creator?.pricing || "—",
-                icon: "💰",
+                icon: <DollarSign size={20} className="text-[#5157a1]" />,
                 gradient: "from-emerald-50 to-teal-50",
               },
               {
                 label: "Platforms",
                 value: platforms.join(", ") || "—",
-                icon: "📱",
+                icon: <Smartphone size={20} className="text-[#5157a1]" />,
                 gradient: "from-purple-50 to-violet-50",
               },
             ].map((stat, i) => (
@@ -213,7 +214,7 @@ export default function CreatorDetails() {
                 key={i}
                 className={`bg-gradient-to-br ${stat.gradient} rounded-2xl p-4 border border-gray-100 shadow-sm`}
               >
-                <div className="text-xl mb-1">{stat.icon}</div>
+                <div className="mb-1 flex justify-center">{stat.icon}</div>
                 <p className="text-xs text-gray-500">{stat.label}</p>
                 <p className="text-lg font-bold text-[#393873] truncate">
                   {stat.value}
@@ -232,8 +233,8 @@ export default function CreatorDetails() {
             {/* About */}
             <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-lg">
-                  📝
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center">
+                  <FileText size={20} className="text-[#5157a1]" />
                 </div>
                 <h2 className="text-lg font-bold text-[#393873]">
                   About Creator
@@ -250,8 +251,8 @@ export default function CreatorDetails() {
             {platforms.length > 0 && (
               <div className="reveal delay-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/30 flex items-center justify-center text-lg">
-                    📱
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/30 flex items-center justify-center">
+                    <Smartphone size={20} className="text-[#5157a1]" />
                   </div>
                   <h2 className="text-lg font-bold text-[#393873]">
                     Active Platforms
@@ -264,14 +265,14 @@ export default function CreatorDetails() {
                       className="px-4 py-2 rounded-xl bg-gray-50 text-gray-700 font-medium text-sm border border-gray-200"
                     >
                       {p.toLowerCase() === "youtube"
-                        ? "🎬"
+                        ? <Youtube size={16} className="inline" />
                         : p.toLowerCase() === "instagram"
-                        ? "📸"
-                        : p.toLowerCase() === "twitter"
-                        ? "🐦"
-                        : p.toLowerCase() === "twitch"
-                        ? "🎮"
-                        : "📱"}{" "}
+                          ? <Camera size={16} className="inline" />
+                          : p.toLowerCase() === "twitter"
+                            ? <Twitter size={16} className="inline" />
+                            : p.toLowerCase() === "twitch"
+                              ? <Gamepad2 size={16} className="inline" />
+                              : <Smartphone size={16} className="inline" />}{" "}
                       {p}
                     </span>
                   ))}
@@ -283,8 +284,8 @@ export default function CreatorDetails() {
             {(creator?.instalink || creator?.youtube_url || creator?.twitter_url) && (
               <div className="reveal delay-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c7eff9]/30 to-[#5157a1]/10 flex items-center justify-center text-lg">
-                    🔗
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c7eff9]/30 to-[#5157a1]/10 flex items-center justify-center">
+                    <LinkIcon size={20} className="text-[#5157a1]" />
                   </div>
                   <h2 className="text-lg font-bold text-[#393873]">
                     Social Links
@@ -295,17 +296,17 @@ export default function CreatorDetails() {
                     {
                       label: "Instagram",
                       url: creator.instalink,
-                      icon: "📸",
+                      icon: <Camera size={18} className="text-[#5157a1]" />,
                     },
                     {
                       label: "YouTube",
                       url: creator.youtube_url,
-                      icon: "🎬",
+                      icon: <Youtube size={18} className="text-[#5157a1]" />,
                     },
                     {
                       label: "Twitter",
                       url: creator.twitter_url,
-                      icon: "🐦",
+                      icon: <Twitter size={18} className="text-[#5157a1]" />,
                     },
                   ]
                     .filter((s) => s.url)
@@ -317,7 +318,7 @@ export default function CreatorDetails() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#5157a1]/5 transition-colors group"
                       >
-                        <span className="text-lg">{s.icon}</span>
+                        <span>{s.icon}</span>
                         <span className="font-medium text-gray-700 group-hover:text-[#5157a1] transition-colors">
                           {s.label}
                         </span>
@@ -336,8 +337,8 @@ export default function CreatorDetails() {
             {/* ── SEND CAMPAIGN CARD ── */}
             <div className="reveal delay-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center text-lg">
-                  📤
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center">
+                  <Send size={20} className="text-[#5157a1]" />
                 </div>
                 <h3 className="font-bold text-[#393873]">
                   Send Campaign
@@ -385,10 +386,9 @@ export default function CreatorDetails() {
                     disabled={!selectedCampaign || sending}
                     onClick={handleSendCampaign}
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold transition-all duration-200
-                      ${
-                        !selectedCampaign || sending
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
+                      ${!selectedCampaign || sending
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
                       }`}
                   >
                     {sending ? (
@@ -397,7 +397,7 @@ export default function CreatorDetails() {
                         Sending…
                       </>
                     ) : (
-                      <>📤 Send Invitation</>
+                      <><Send size={16} className="inline" /> Send Invitation</>
                     )}
                   </button>
                 </>
@@ -406,13 +406,12 @@ export default function CreatorDetails() {
               {/* Result feedback */}
               {sendResult && (
                 <div
-                  className={`mt-3 p-3 rounded-xl text-sm font-medium ${
-                    sendResult.type === "success"
+                  className={`mt-3 p-3 rounded-xl text-sm font-medium ${sendResult.type === "success"
                       ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                       : "bg-red-50 text-red-700 border border-red-200"
-                  }`}
+                    }`}
                 >
-                  {sendResult.type === "success" ? "✅" : "⚠️"}{" "}
+                  {sendResult.type === "success" ? <CheckCircle size={16} className="inline text-emerald-600" /> : <AlertTriangle size={16} className="inline text-red-600" />}{" "}
                   {sendResult.message}
                 </div>
               )}
