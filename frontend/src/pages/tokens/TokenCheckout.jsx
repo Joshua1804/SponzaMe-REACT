@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
+import { Sprout, Star, Crown, Coins, Package, CreditCard, Smartphone, Landmark, Lock, ShieldCheck, MessageCircle, Check } from "lucide-react";
 
 export default function TokenCheckout() {
     const [searchParams] = useSearchParams();
@@ -26,7 +27,7 @@ export default function TokenCheckout() {
             originalPrice: null,
             perToken: "₹4.99",
             color: "from-blue-500 to-indigo-500",
-            icon: "🌱"
+            icon: <Sprout size={24} />
         },
         {
             id: "value",
@@ -37,7 +38,7 @@ export default function TokenCheckout() {
             perToken: "₹3.43",
             popular: true,
             color: "from-purple-500 to-pink-500",
-            icon: "⭐"
+            icon: <Star size={24} />
         },
         {
             id: "premium",
@@ -47,7 +48,7 @@ export default function TokenCheckout() {
             originalPrice: null,
             perToken: "₹3.00",
             color: "from-amber-500 to-orange-500",
-            icon: "👑"
+            icon: <Crown size={24} />
         },
     ];
 
@@ -101,7 +102,7 @@ export default function TokenCheckout() {
                     <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-md w-full text-center">
                         {/* Success Animation */}
                         <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center animate-bounce">
-                            <span className="text-4xl">✓</span>
+                            <Check size={40} className="text-white" />
                         </div>
 
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
@@ -110,7 +111,7 @@ export default function TokenCheckout() {
                         {/* Token Summary */}
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-8">
                             <div className="flex items-center justify-center gap-3 mb-2">
-                                <span className="text-4xl">🪙</span>
+                                <Coins size={36} className="text-amber-500" />
                                 <span className="text-4xl font-bold text-amber-600">+{selectedPlan.tokens}</span>
                             </div>
                             <p className="text-amber-700">Tokens added to your balance</p>
@@ -199,7 +200,7 @@ export default function TokenCheckout() {
                             <div className="reveal bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                                        📦
+                                        <Package size={16} className="text-[#5157a1]" />
                                     </span>
                                     Select Plan
                                 </h2>
@@ -219,9 +220,9 @@ export default function TokenCheckout() {
                                                     Popular
                                                 </span>
                                             )}
-                                            <div className="text-2xl mb-1">{plan.icon}</div>
+                                            <div className="mb-1">{plan.icon}</div>
                                             <p className="font-semibold text-gray-900">{plan.name}</p>
-                                            <p className="text-sm text-gray-500">{plan.tokens} 🪙</p>
+                                            <p className="text-sm text-gray-500 flex items-center justify-center gap-1">{plan.tokens} <Coins size={14} className="text-amber-500" /></p>
                                             <p className="font-bold text-[#5157a1] mt-1">₹{plan.price}</p>
                                         </button>
                                     ))}
@@ -232,7 +233,7 @@ export default function TokenCheckout() {
                             <div className="reveal delay-1 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                                        💳
+                                        <CreditCard size={16} className="text-[#5157a1]" />
                                     </span>
                                     Payment Method
                                 </h2>
@@ -240,9 +241,9 @@ export default function TokenCheckout() {
                                 {/* Payment Method Tabs */}
                                 <div className="flex gap-3 mb-6">
                                     {[
-                                        { id: "card", label: "Card", icon: "💳" },
-                                        { id: "upi", label: "UPI", icon: "📱" },
-                                        { id: "netbanking", label: "Net Banking", icon: "🏦" },
+                                        { id: "card", label: "Card", icon: <CreditCard size={18} /> },
+                                        { id: "upi", label: "UPI", icon: <Smartphone size={18} /> },
+                                        { id: "netbanking", label: "Net Banking", icon: <Landmark size={18} /> },
                                     ].map((method) => (
                                         <button
                                             key={method.id}
@@ -277,7 +278,7 @@ export default function TokenCheckout() {
                                                         maxLength={19}
                                                     />
                                                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
-                                                        <span className="text-lg">💳</span>
+                                                        <CreditCard size={18} className="text-gray-400" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -344,7 +345,7 @@ export default function TokenCheckout() {
                                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5157a1]/20 focus:border-[#5157a1] transition-all"
                                                 />
                                                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                    <span className="text-lg">📱</span>
+                                                    <Smartphone size={18} className="text-gray-400" />
                                                 </div>
                                             </div>
                                             <div className="mt-4 flex items-center gap-4 justify-center">
@@ -377,7 +378,7 @@ export default function TokenCheckout() {
 
                                     {/* Security Notice */}
                                     <div className="mt-6 flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                                        <span className="text-lg">🔒</span>
+                                        <Lock size={18} className="text-emerald-600" />
                                         <p className="text-sm text-emerald-700">
                                             Your payment is secured with 256-bit SSL encryption
                                         </p>
@@ -399,7 +400,7 @@ export default function TokenCheckout() {
                                             </>
                                         ) : (
                                             <>
-                                                <span>🔐</span>
+                                                <ShieldCheck size={18} />
                                                 Pay ₹{selectedPlan.price} Securely
                                             </>
                                         )}
@@ -418,7 +419,7 @@ export default function TokenCheckout() {
                                 <div className={`bg-gradient-to-br ${selectedPlan.color} rounded-xl p-5 text-white mb-6`}>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-3xl">{selectedPlan.icon}</span>
+                                            <span>{selectedPlan.icon}</span>
                                             <div>
                                                 <p className="font-bold text-lg">{selectedPlan.name} Plan</p>
                                                 <p className="text-white/80 text-sm">{selectedPlan.perToken} per token</p>
@@ -426,7 +427,7 @@ export default function TokenCheckout() {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-center gap-2 py-3 bg-white/20 rounded-lg">
-                                        <span className="text-3xl">🪙</span>
+                                        <Coins size={28} className="text-white" />
                                         <span className="text-3xl font-bold">{selectedPlan.tokens}</span>
                                         <span className="text-white/80">tokens</span>
                                     </div>
@@ -465,7 +466,7 @@ export default function TokenCheckout() {
                                             "No expiry on tokens",
                                         ].map((benefit, i) => (
                                             <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                                                <span className="text-emerald-500">✓</span>
+                                                <Check size={14} className="text-emerald-500" />
                                                 {benefit}
                                             </li>
                                         ))}
@@ -476,8 +477,8 @@ export default function TokenCheckout() {
                             {/* Support */}
                             <div className="reveal delay-3 bg-[#5157a1]/5 rounded-2xl p-5 border border-[#5157a1]/10">
                                 <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-xl shadow-sm">
-                                        💬
+                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                        <MessageCircle size={20} className="text-[#5157a1]" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-gray-900">Need Help?</p>

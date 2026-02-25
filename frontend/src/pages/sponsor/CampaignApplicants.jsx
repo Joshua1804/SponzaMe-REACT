@@ -4,6 +4,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ConfirmModal from "../../components/ConfirmModal";
 import api from "../../api";
+import { Users, Hourglass, CheckCircle, XCircle, AlertTriangle, MailOpen, Target, Smartphone, UserCircle, Lock } from "lucide-react";
 
 export default function CampaignApplicants() {
   const [searchParams] = useSearchParams();
@@ -55,7 +56,7 @@ export default function CampaignApplicants() {
         );
         if (found) setCampaign(found);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [campaignId]);
 
   /* ── Scroll reveal ── */
@@ -95,7 +96,7 @@ export default function CampaignApplicants() {
       .catch((err) => {
         alert(
           err.response?.data?.error ||
-            "Failed to update applicant status."
+          "Failed to update applicant status."
         );
       })
       .finally(() => setActioningId(null));
@@ -175,8 +176,8 @@ export default function CampaignApplicants() {
 
             <div className="reveal flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                  👥
+                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                  <Users size={24} className="text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl lg:text-3xl font-bold text-white">
@@ -190,11 +191,10 @@ export default function CampaignApplicants() {
               </div>
 
               <span
-                className={`inline-block px-4 py-2 rounded-full text-sm font-semibold capitalize ${
-                  isCampaignClosed
+                className={`inline-block px-4 py-2 rounded-full text-sm font-semibold capitalize ${isCampaignClosed
                     ? "bg-red-100 text-red-700"
                     : "bg-emerald-100 text-emerald-700"
-                }`}
+                  }`}
               >
                 {campaignStatus}
               </span>
@@ -213,28 +213,28 @@ export default function CampaignApplicants() {
                 count: pendingCount,
                 color: "from-amber-50 to-amber-100/50",
                 text: "text-amber-600",
-                icon: "⏳",
+                icon: <Hourglass size={20} className="text-amber-600" />,
               },
               {
                 label: "Accepted",
                 count: acceptedCount,
                 color: "from-emerald-50 to-emerald-100/50",
                 text: "text-emerald-600",
-                icon: "✅",
+                icon: <CheckCircle size={20} className="text-emerald-600" />,
               },
               {
                 label: "Rejected",
                 count: rejectedCount,
                 color: "from-red-50 to-red-100/50",
                 text: "text-red-600",
-                icon: "❌",
+                icon: <XCircle size={20} className="text-red-600" />,
               },
             ].map((s) => (
               <div
                 key={s.label}
                 className={`reveal bg-gradient-to-br ${s.color} rounded-2xl p-4 border border-gray-100 shadow-sm text-center`}
               >
-                <div className="text-xl mb-1">{s.icon}</div>
+                <div className="mb-1 flex justify-center">{s.icon}</div>
                 <p className={`text-2xl font-bold ${s.text}`}>
                   {s.count}
                 </p>
@@ -261,10 +261,9 @@ export default function CampaignApplicants() {
                   key={t.key}
                   onClick={() => setStatusFilter(t.key)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all
-                    ${
-                      statusFilter === t.key
-                        ? "bg-white text-[#5157a1] shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
+                    ${statusFilter === t.key
+                      ? "bg-white text-[#5157a1] shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   {t.label}
@@ -312,8 +311,8 @@ export default function CampaignApplicants() {
         {/* Error */}
         {error && !loading && (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center text-3xl mb-4">
-              ⚠️
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+              <AlertTriangle size={28} className="text-red-500" />
             </div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">
               Something went wrong
@@ -331,8 +330,8 @@ export default function CampaignApplicants() {
         {/* Empty */}
         {!loading && !error && applicants.length === 0 && (
           <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-4xl mb-4">
-              📭
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center mb-4">
+              <MailOpen size={36} className="text-[#5157a1]" />
             </div>
             <h3 className="text-xl font-bold text-[#393873] mb-2">
               No Applicants Yet
@@ -400,12 +399,12 @@ export default function CampaignApplicants() {
                         <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mt-0.5">
                           {app.niche && (
                             <span className="flex items-center gap-1">
-                              🎯 {app.niche}
+                              <Target size={14} className="inline" /> {app.niche}
                             </span>
                           )}
                           {app.platforms && (
                             <span className="flex items-center gap-1">
-                              📱 {app.platforms}
+                              <Smartphone size={14} className="inline" /> {app.platforms}
                             </span>
                           )}
                         </div>
@@ -455,7 +454,7 @@ export default function CampaignApplicants() {
                         to={`/sponsor/creator/${app.creator_user_id || app.user_id}`}
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-[#5157a1]/10 text-[#5157a1] hover:bg-[#5157a1]/20 transition-all duration-200"
                       >
-                        👤 Profile
+                        <UserCircle size={16} className="inline" /> Profile
                       </Link>
 
                       <button
@@ -467,16 +466,15 @@ export default function CampaignApplicants() {
                           )
                         }
                         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                          ${
-                            !canAct
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md active:scale-95"
+                          ${!canAct
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md active:scale-95"
                           }`}
                       >
                         {isActioning ? (
                           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                          "✅"
+                          <CheckCircle size={16} />
                         )}{" "}
                         Accept
                       </button>
@@ -490,16 +488,15 @@ export default function CampaignApplicants() {
                           )
                         }
                         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                          ${
-                            !canAct
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : "bg-red-500 text-white hover:bg-red-600 hover:shadow-md active:scale-95"
+                          ${!canAct
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-red-500 text-white hover:bg-red-600 hover:shadow-md active:scale-95"
                           }`}
                       >
                         {isActioning ? (
                           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                          "❌"
+                          <XCircle size={16} />
                         )}{" "}
                         Reject
                       </button>
@@ -514,7 +511,7 @@ export default function CampaignApplicants() {
         {isCampaignClosed && applicants.length > 0 && (
           <div className="mt-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-center">
             <p className="text-sm text-red-600 font-medium">
-              🔒 This campaign is closed. No further actions can be
+              <Lock size={16} className="inline" /> This campaign is closed. No further actions can be
               taken.
             </p>
           </div>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
+import { Youtube, Camera, Twitter, Briefcase, Music, Sparkles, AlertTriangle, X, ClipboardList, Settings, Smartphone, FileText, Check, Rocket } from "lucide-react";
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -82,18 +83,18 @@ export default function CreateCampaign() {
       .catch((err) => {
         setError(
           err.response?.data?.error ||
-            "Failed to create campaign. Please try again."
+          "Failed to create campaign. Please try again."
         );
         setSubmitting(false);
       });
   };
 
   const platforms = [
-    { name: "YouTube", icon: "🎬" },
-    { name: "Instagram", icon: "📸" },
-    { name: "Twitter", icon: "🐦" },
-    { name: "LinkedIn", icon: "💼" },
-    { name: "TikTok", icon: "🎵" },
+    { name: "YouTube", icon: <Youtube size={18} /> },
+    { name: "Instagram", icon: <Camera size={18} /> },
+    { name: "Twitter", icon: <Twitter size={18} /> },
+    { name: "LinkedIn", icon: <Briefcase size={18} /> },
+    { name: "TikTok", icon: <Music size={18} /> },
   ];
 
   const niches = [
@@ -132,8 +133,8 @@ export default function CreateCampaign() {
               </nav>
 
               <div className="flex items-center gap-4 mb-3">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                  ✨
+                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                  <Sparkles size={24} className="text-white" />
                 </div>
                 <div>
                   <h1 className="text-3xl lg:text-4xl font-bold">
@@ -158,14 +159,14 @@ export default function CreateCampaign() {
           {/* Error banner */}
           {error && (
             <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-3 shadow-sm animate-[fadeIn_0.3s_ease]">
-              <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">⚠️</div>
+              <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0"><AlertTriangle size={16} className="text-red-500" /></div>
               <span className="flex-1">{error}</span>
               <button
                 type="button"
                 onClick={() => setError("")}
                 className="text-red-400 hover:text-red-600 transition-colors"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
           )}
@@ -173,8 +174,8 @@ export default function CreateCampaign() {
           {/* ── Section 1: Campaign Info ── */}
           <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center text-lg">
-                📋
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#c7eff9]/30 flex items-center justify-center">
+                <ClipboardList size={20} className="text-[#5157a1]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[#393873]">
@@ -197,11 +198,10 @@ export default function CreateCampaign() {
                   onChange={handleChange}
                   required
                   placeholder="e.g. Summer Fashion Brand Promotion"
-                  className={`w-full p-3.5 rounded-xl bg-gray-50 border focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/30 focus:border-[#5157a1] transition-all duration-200 ${
-                    touched.title && !form.title
+                  className={`w-full p-3.5 rounded-xl bg-gray-50 border focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/30 focus:border-[#5157a1] transition-all duration-200 ${touched.title && !form.title
                       ? "border-red-300 bg-red-50/30"
                       : "border-gray-200"
-                  }`}
+                    }`}
                   onBlur={() => setTouched({ ...touched, title: true })}
                 />
                 {touched.title && !form.title && (
@@ -222,15 +222,13 @@ export default function CreateCampaign() {
                   rows={4}
                   maxLength={500}
                   onBlur={() => setTouched({ ...touched, description: true })}
-                  className={`w-full p-3.5 rounded-xl bg-gray-50 border focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/30 focus:border-[#5157a1] transition-all duration-200 resize-none ${
-                    touched.description && !form.description
+                  className={`w-full p-3.5 rounded-xl bg-gray-50 border focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/30 focus:border-[#5157a1] transition-all duration-200 resize-none ${touched.description && !form.description
                       ? "border-red-300 bg-red-50/30"
                       : "border-gray-200"
-                  }`}
+                    }`}
                 />
-                <p className={`text-xs mt-1 text-right ${
-                  form.description.length >= 500 ? "text-red-500 font-medium" : "text-gray-400"
-                }`}>
+                <p className={`text-xs mt-1 text-right ${form.description.length >= 500 ? "text-red-500 font-medium" : "text-gray-400"
+                  }`}>
                   {form.description.length}/500
                 </p>
                 {touched.description && !form.description && (
@@ -243,8 +241,8 @@ export default function CreateCampaign() {
           {/* ── Section 2: Budget, Niche, Deadline ── */}
           <div className="reveal delay-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e7bdd3]/30 to-[#5157a1]/10 flex items-center justify-center text-lg">
-                ⚙️
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e7bdd3]/30 to-[#5157a1]/10 flex items-center justify-center">
+                <Settings size={20} className="text-[#5157a1]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[#393873]">
@@ -334,8 +332,8 @@ export default function CreateCampaign() {
           {/* ── Section 3: Platforms ── */}
           <div className="reveal delay-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c7eff9]/30 to-[#5157a1]/10 flex items-center justify-center text-lg">
-                📱
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c7eff9]/30 to-[#5157a1]/10 flex items-center justify-center">
+                <Smartphone size={20} className="text-[#5157a1]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[#393873]">
@@ -354,16 +352,15 @@ export default function CreateCampaign() {
                   key={p.name}
                   onClick={() => togglePlatform(p.name)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl cursor-pointer transition-all duration-200 font-medium text-sm border
-                    ${
-                      form.platforms.includes(p.name)
-                        ? "bg-[#5157a1] text-white border-[#5157a1] shadow-md shadow-[#5157a1]/20 scale-[0.97]"
-                        : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
+                    ${form.platforms.includes(p.name)
+                      ? "bg-[#5157a1] text-white border-[#5157a1] shadow-md shadow-[#5157a1]/20 scale-[0.97]"
+                      : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
                     }`}
                 >
-                  <span className="text-lg">{p.icon}</span>
+                  <span>{p.icon}</span>
                   {p.name}
                   {form.platforms.includes(p.name) && (
-                    <span className="ml-1 text-xs">✓</span>
+                    <Check size={12} className="ml-1" />
                   )}
                 </button>
               ))}
@@ -373,8 +370,8 @@ export default function CreateCampaign() {
           {/* ── Section 4: Requirements & Deliverables ── */}
           <div className="reveal delay-3 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/30 flex items-center justify-center text-lg">
-                📝
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/30 flex items-center justify-center">
+                <FileText size={20} className="text-[#5157a1]" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[#393873]">
@@ -437,7 +434,7 @@ export default function CreateCampaign() {
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  🚀 Create Campaign
+                  <Rocket size={16} className="inline" /> Create Campaign
                 </span>
               )}
             </button>

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { UserCircle, Monitor, Wrench, Palette, Users, Building2, DollarSign, Target, Search, Handshake, Lightbulb, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function About() {
     useEffect(() => {
@@ -22,24 +23,24 @@ export default function About() {
     }, []);
 
     const team = [
-        { name: "Rahul Sharma", role: "Founder & CEO", emoji: "👨‍💼", bio: "10+ years in digital marketing" },
-        { name: "Priya Patel", role: "Head of Operations", emoji: "👩‍💻", bio: "Ex-Google, product expert" },
-        { name: "Arjun Menon", role: "Lead Developer", emoji: "👨‍🔧", bio: "Full-stack wizard" },
-        { name: "Sneha Gupta", role: "Community Manager", emoji: "👩‍🎨", bio: "Creator ecosystem specialist" },
+        { name: "Rahul Sharma", role: "Founder & CEO", emoji: <UserCircle size={32} className="text-[#393873]" />, bio: "10+ years in digital marketing" },
+        { name: "Priya Patel", role: "Head of Operations", emoji: <Monitor size={32} className="text-[#393873]" />, bio: "Ex-Google, product expert" },
+        { name: "Arjun Menon", role: "Lead Developer", emoji: <Wrench size={32} className="text-[#393873]" />, bio: "Full-stack wizard" },
+        { name: "Sneha Gupta", role: "Community Manager", emoji: <Palette size={32} className="text-[#393873]" />, bio: "Creator ecosystem specialist" },
     ];
 
     const stats = [
-        { value: "10K+", label: "Creators", icon: "👥" },
-        { value: "500+", label: "Brands", icon: "🏢" },
-        { value: "₹2Cr+", label: "Paid Out", icon: "💰" },
-        { value: "5K+", label: "Campaigns", icon: "🎯" },
+        { value: "10K+", label: "Creators", icon: <Users size={28} className="text-[#5157a1]" /> },
+        { value: "500+", label: "Brands", icon: <Building2 size={28} className="text-[#5157a1]" /> },
+        { value: "₹2Cr+", label: "Paid Out", icon: <DollarSign size={28} className="text-[#5157a1]" /> },
+        { value: "5K+", label: "Campaigns", icon: <Target size={28} className="text-[#5157a1]" /> },
     ];
 
     const values = [
-        { title: "Transparency", desc: "Clear pricing, honest communication, no hidden fees", icon: "🔍" },
-        { title: "Community First", desc: "We build for creators and sponsors equally", icon: "🤝" },
-        { title: "Innovation", desc: "Constantly improving with cutting-edge tech", icon: "💡" },
-        { title: "Trust", desc: "Verified profiles and secure transactions", icon: "🛡️" },
+        { title: "Transparency", desc: "Clear pricing, honest communication, no hidden fees", icon: <Search size={28} className="text-[#5157a1]" /> },
+        { title: "Community First", desc: "We build for creators and sponsors equally", icon: <Handshake size={28} className="text-[#5157a1]" /> },
+        { title: "Innovation", desc: "Constantly improving with cutting-edge tech", icon: <Lightbulb size={28} className="text-[#5157a1]" /> },
+        { title: "Trust", desc: "Verified profiles and secure transactions", icon: <ShieldCheck size={28} className="text-[#5157a1]" /> },
     ];
 
     return (
@@ -57,7 +58,7 @@ export default function About() {
                 <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
-                            <span className="text-lg">✨</span>
+                            <Sparkles size={18} className="text-white" />
                             <span className="text-sm font-medium text-white/90">Our Story</span>
                         </div>
 
@@ -83,7 +84,7 @@ export default function About() {
                                 key={i}
                                 className="bg-white rounded-2xl p-6 shadow-xl shadow-gray-200/50 border border-gray-100 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
                             >
-                                <div className="text-4xl mb-2">{stat.icon}</div>
+                                <div className="mb-2 flex justify-center">{stat.icon}</div>
                                 <div className="text-3xl font-bold text-[#393873]">{stat.value}</div>
                                 <div className="text-gray-500">{stat.label}</div>
                             </div>
@@ -129,7 +130,7 @@ export default function About() {
                                 <div className="grid grid-cols-2 gap-4">
                                     {values.map((value, i) => (
                                         <div key={i} className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-shadow">
-                                            <div className="text-3xl mb-3">{value.icon}</div>
+                                            <div className="mb-3">{value.icon}</div>
                                             <h3 className="font-bold text-gray-900 mb-1">{value.title}</h3>
                                             <p className="text-sm text-gray-500">{value.desc}</p>
                                         </div>
@@ -162,7 +163,7 @@ export default function About() {
                                 key={i}
                                 className="group bg-gray-50 rounded-2xl p-6 text-center transition-all duration-300 hover:bg-gradient-to-br hover:from-[#5157a1] hover:to-[#393873] hover:shadow-xl"
                             >
-                                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#c7eff9] to-[#e7bdd3] flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">
+                                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#c7eff9] to-[#e7bdd3] flex items-center justify-center group-hover:scale-110 transition-transform">
                                     {member.emoji}
                                 </div>
                                 <h3 className="font-bold text-gray-900 group-hover:text-white transition-colors">{member.name}</h3>
