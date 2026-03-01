@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { CheckCircle, AlertTriangle, Info } from "lucide-react";
+import { CheckCircle, AlertTriangle, Info, X } from "lucide-react";
 
 /* ── Toast container + hook ── */
 
@@ -45,7 +45,7 @@ function ToastItem({ toast, onDismiss }) {
         }}
         className="text-current opacity-40 hover:opacity-70 transition-opacity flex-shrink-0"
       >
-        ✕
+        <X size={16} />
       </button>
     </div>
   );

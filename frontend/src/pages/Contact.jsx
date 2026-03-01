@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Mail, Phone, MapPin, Clock, MessageSquare, Check, Send, HelpCircle, Twitter, Camera, Briefcase, Youtube } from "lucide-react";
 
 export default function Contact() {
     const [formData, setFormData] = useState({
@@ -47,10 +48,10 @@ export default function Contact() {
     };
 
     const contactInfo = [
-        { icon: "📧", label: "Email", value: "hello@sponzame.com", link: "mailto:hello@sponzame.com" },
-        { icon: "📞", label: "Phone", value: "+91 98765 43210", link: "tel:+919876543210" },
-        { icon: "📍", label: "Address", value: "Mumbai, Maharashtra, India", link: null },
-        { icon: "⏰", label: "Hours", value: "Mon-Fri, 9AM-6PM IST", link: null },
+        { icon: <Mail size={24} className="text-[#5157a1]" />, label: "Email", value: "hello@sponzame.com", link: "mailto:hello@sponzame.com" },
+        { icon: <Phone size={24} className="text-[#5157a1]" />, label: "Phone", value: "+91 98765 43210", link: "tel:+919876543210" },
+        { icon: <MapPin size={24} className="text-[#5157a1]" />, label: "Address", value: "Mumbai, Maharashtra, India", link: null },
+        { icon: <Clock size={24} className="text-[#5157a1]" />, label: "Hours", value: "Mon-Fri, 9AM-6PM IST", link: null },
     ];
 
     const faqs = [
@@ -74,7 +75,7 @@ export default function Contact() {
                 <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
-                            <span className="text-lg">💬</span>
+                            <MessageSquare size={18} className="text-white" />
                             <span className="text-sm font-medium text-white/90">Get in Touch</span>
                         </div>
 
@@ -99,7 +100,7 @@ export default function Contact() {
                                 href={info.link || "#"}
                                 className={`bg-white rounded-2xl p-5 shadow-xl shadow-gray-200/50 border border-gray-100 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${info.link ? "cursor-pointer" : "cursor-default"}`}
                             >
-                                <div className="text-3xl mb-2">{info.icon}</div>
+                                <div className="mb-2 flex justify-center">{info.icon}</div>
                                 <div className="text-sm text-gray-500 mb-1">{info.label}</div>
                                 <div className="font-semibold text-gray-900 text-sm">{info.value}</div>
                             </a>
@@ -118,15 +119,15 @@ export default function Contact() {
                             <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 p-8">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                     <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                                        ✉️
+                                        <Mail size={20} className="text-[#5157a1]" />
                                     </span>
                                     Send us a Message
                                 </h2>
 
                                 {submitted ? (
                                     <div className="text-center py-12">
-                                        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-4xl">
-                                            ✓
+                                        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center">
+                                            <Check size={36} className="text-white" />
                                         </div>
                                         <h3 className="text-xl font-bold text-gray-900 mb-2">Message Sent!</h3>
                                         <p className="text-gray-600 mb-6">We'll get back to you within 24 hours.</p>
@@ -205,8 +206,8 @@ export default function Contact() {
                                             type="submit"
                                             disabled={isSubmitting}
                                             className={`w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${isSubmitting
-                                                    ? "bg-gray-400 cursor-not-allowed"
-                                                    : "bg-gradient-to-r from-[#5157a1] to-[#393873] hover:shadow-xl hover:shadow-[#5157a1]/25 transform hover:-translate-y-0.5"
+                                                ? "bg-gray-400 cursor-not-allowed"
+                                                : "bg-gradient-to-r from-[#5157a1] to-[#393873] hover:shadow-xl hover:shadow-[#5157a1]/25 transform hover:-translate-y-0.5"
                                                 }`}
                                         >
                                             {isSubmitting ? (
@@ -216,7 +217,7 @@ export default function Contact() {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <span>📤</span>
+                                                    <Send size={16} />
                                                     Send Message
                                                 </>
                                             )}
@@ -230,7 +231,7 @@ export default function Contact() {
                         <div className="reveal delay-1">
                             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                                    ❓
+                                    <HelpCircle size={20} className="text-[#5157a1]" />
                                 </span>
                                 Frequently Asked Questions
                             </h2>
@@ -269,15 +270,15 @@ export default function Contact() {
                                 <h3 className="font-bold text-gray-900 mb-4">Follow Us</h3>
                                 <div className="flex gap-3">
                                     {[
-                                        { icon: "🐦", label: "Twitter", color: "from-blue-400 to-blue-500" },
-                                        { icon: "📷", label: "Instagram", color: "from-pink-400 to-purple-500" },
-                                        { icon: "💼", label: "LinkedIn", color: "from-blue-600 to-blue-700" },
-                                        { icon: "📺", label: "YouTube", color: "from-red-500 to-red-600" },
+                                        { icon: <Twitter size={20} className="text-white" />, label: "Twitter", color: "from-blue-400 to-blue-500" },
+                                        { icon: <Camera size={20} className="text-white" />, label: "Instagram", color: "from-pink-400 to-purple-500" },
+                                        { icon: <Briefcase size={20} className="text-white" />, label: "LinkedIn", color: "from-blue-600 to-blue-700" },
+                                        { icon: <Youtube size={20} className="text-white" />, label: "YouTube", color: "from-red-500 to-red-600" },
                                     ].map((social, i) => (
                                         <a
                                             key={i}
                                             href="#"
-                                            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${social.color} flex items-center justify-center text-xl hover:scale-110 transition-transform shadow-lg`}
+                                            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${social.color} flex items-center justify-center hover:scale-110 transition-transform shadow-lg`}
                                             title={social.label}
                                         >
                                             {social.icon}
