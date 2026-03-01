@@ -8,7 +8,6 @@ const NAV_LINKS = {
   guest: [
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
-    { to: "/sponsors", label: "Sponsors" },
     { to: "/contact", label: "Contact" },
   ],
   creator: [
@@ -109,11 +108,10 @@ export default function Navbar() {
         className={`
         fixed top-0 left-0 right-0 w-full z-50
         transition-all duration-300 ease-in-out
-        ${
-          scrolled || mobileMenuOpen
+        ${scrolled || mobileMenuOpen
             ? "bg-white/95 backdrop-blur-lg shadow-lg border-b border-[#e1e1eb]"
             : "bg-transparent"
-        }
+          }
       `}
       >
         {/* Full-width container */}
@@ -137,19 +135,17 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`relative font-medium transition-all duration-300 group ${
-                    location.pathname === link.to
+                  className={`relative font-medium transition-all duration-300 group ${location.pathname === link.to
                       ? "text-[#5157a1]"
                       : "text-gray-600 hover:text-[#5157a1]"
-                  }`}
+                    }`}
                 >
                   {link.label}
                   <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#5157a1] to-[#393873] transition-all duration-300 ${
-                      location.pathname === link.to
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#5157a1] to-[#393873] transition-all duration-300 ${location.pathname === link.to
                         ? "w-full"
                         : "w-0 group-hover:w-full"
-                    }`}
+                      }`}
                   ></span>
                 </Link>
               ))}
@@ -179,9 +175,8 @@ export default function Navbar() {
                     </span>
                     {/* Chevron */}
                     <svg
-                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                        dropdownOpen ? "rotate-180" : ""
-                      }`}
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""
+                        }`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -314,19 +309,16 @@ export default function Navbar() {
               aria-label="Toggle menu"
             >
               <span
-                className={`block w-6 h-0.5 bg-[#393873] transition-all duration-300 ${
-                  mobileMenuOpen ? "rotate-45 translate-y-2" : ""
-                }`}
+                className={`block w-6 h-0.5 bg-[#393873] transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""
+                  }`}
               ></span>
               <span
-                className={`block w-6 h-0.5 bg-[#393873] transition-all duration-300 ${
-                  mobileMenuOpen ? "opacity-0 scale-0" : ""
-                }`}
+                className={`block w-6 h-0.5 bg-[#393873] transition-all duration-300 ${mobileMenuOpen ? "opacity-0 scale-0" : ""
+                  }`}
               ></span>
               <span
-                className={`block w-6 h-0.5 bg-[#393873] transition-all duration-300 ${
-                  mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
-                }`}
+                className={`block w-6 h-0.5 bg-[#393873] transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+                  }`}
               ></span>
             </button>
           </div>
@@ -334,9 +326,8 @@ export default function Navbar() {
 
         {/* ── Mobile Menu ── */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="px-4 py-4 space-y-2 bg-white/95 backdrop-blur-lg border-t border-[#e1e1eb]">
             {/* Mobile user info header (logged in only) */}
@@ -367,11 +358,10 @@ export default function Navbar() {
                 key={link.to}
                 to={link.to}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 font-medium rounded-lg transition-all duration-300 hover:translate-x-2 ${
-                  location.pathname === link.to
+                className={`block px-4 py-3 font-medium rounded-lg transition-all duration-300 hover:translate-x-2 ${location.pathname === link.to
                     ? "bg-[#5157a1]/10 text-[#5157a1]"
                     : "text-gray-600 hover:bg-[#5157a1]/10 hover:text-[#5157a1]"
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>

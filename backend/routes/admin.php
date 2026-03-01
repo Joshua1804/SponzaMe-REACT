@@ -20,6 +20,27 @@ function handleAdminRoutes(string $method, string $action): void
                 return;
             }
             break;
+
+        case 'campaigns':
+            if ($method === 'GET') {
+                AdminController::campaigns();
+                return;
+            }
+            break;
+
+        case 'campaign-status':
+            if ($method === 'PUT') {
+                AdminController::updateCampaignStatus();
+                return;
+            }
+            break;
+
+        case 'campaign':
+            if ($method === 'DELETE') {
+                AdminController::deleteCampaign();
+                return;
+            }
+            break;
     }
 
     http_response_code(404);
