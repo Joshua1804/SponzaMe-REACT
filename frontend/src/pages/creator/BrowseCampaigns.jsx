@@ -7,30 +7,10 @@ import api from "../../api";
 
 export default function BrowseCampaigns() {
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Scroll reveal animation
-  useEffect(() => {
-    const elements = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("active");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 },
-    );
-
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch campaigns from API
   useEffect(() => {
     api.get("/creator/campaigns")
       .then(res => {
@@ -49,6 +29,26 @@ export default function BrowseCampaigns() {
       .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
+
+  // Scroll reveal animation — re-run after campaigns load
+  useEffect(() => {
+    const elements = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [campaigns]);
 
   return (
     <div className="pt-16 bg-gray-50 min-h-screen">

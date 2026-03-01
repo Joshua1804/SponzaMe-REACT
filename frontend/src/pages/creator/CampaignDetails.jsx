@@ -11,6 +11,15 @@ export default function CampaignDetails() {
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applyMessage, setApplyMessage] = useState("");
+  const [hasApplied, setHasApplied] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState(0);
+
+  // Fetch real token balance
+  useEffect(() => {
+    api.get("/creator/dashboard")
+      .then(res => setTokenBalance(res.data.token_balance || 0))
+      .catch(() => { });
+  }, []);
 
   useEffect(() => {
     api.get(`/creator/campaign/${id}`)
@@ -28,21 +37,44 @@ export default function CampaignDetails() {
           description: c.description || "",
           requirements: c.requirements ? c.requirements.split("\n").filter(Boolean) : [],
           deliverables: c.deliverables ? c.deliverables.split("\n").filter(Boolean) : [],
+          sponsorCampaignCount: c.sponsor_campaign_count || 0,
           icon: <Megaphone size={28} />,
         });
+        setHasApplied(!!c.has_applied);
       })
       .catch(() => setCampaign(null))
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Scroll reveal animation — re-run after campaign loads
+  useEffect(() => {
+    const elements = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [campaign]);
+
   const handleApply = () => {
     api.post(`/creator/campaign/${id}/apply`)
       .then(res => {
         setApplyMessage(res.data.message || "Application submitted!");
+        setHasApplied(true);
+        setTokenBalance(prev => prev - (campaign?.tokenCost || 2));
         setIsApplying(false);
       })
       .catch(err => {
         setApplyMessage(err.response?.data?.error || "Failed to apply.");
+        setIsApplying(false);
       });
   };
 
@@ -214,20 +246,32 @@ export default function CampaignDetails() {
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                     <span className="text-gray-600">Your Balance</span>
-                    <span className="font-bold text-gray-900">120 <Coins size={16} className="inline" /></span>
+                    <span className="font-bold text-gray-900">{tokenBalance} <Coins size={16} className="inline" /></span>
                   </div>
                 </div>
 
                 <button
-                  onClick={() => setIsApplying(true)}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#5157a1]/25 hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={() => !hasApplied && setIsApplying(true)}
+                  disabled={hasApplied}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 ${hasApplied
+                    ? "bg-green-100 text-green-700 cursor-not-allowed border border-green-200"
+                    : "bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:shadow-[#5157a1]/25 hover:scale-[1.02] active:scale-[0.98]"
+                    }`}
                 >
-                  Apply for Campaign
+                  {hasApplied ? "✓ Already Applied" : "Apply for Campaign"}
                 </button>
 
-                <p className="text-xs text-gray-400 text-center mt-4">
-                  By applying, you agree to the campaign terms
-                </p>
+                {applyMessage && (
+                  <p className={`text-sm text-center mt-3 font-medium ${hasApplied ? 'text-green-600' : 'text-red-500'}`}>
+                    {applyMessage}
+                  </p>
+                )}
+
+                {!hasApplied && (
+                  <p className="text-xs text-gray-400 text-center mt-4">
+                    By applying, you agree to the campaign terms
+                  </p>
+                )}
               </div>
 
               {/* Sponsor Card */}
@@ -247,7 +291,7 @@ export default function CampaignDetails() {
                     <Star size={14} className="inline" /> 4.8 Rating
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
-                    <ClipboardList size={14} className="inline" /> 12 Campaigns Posted
+                    <ClipboardList size={14} className="inline" /> {campaign.sponsorCampaignCount} Campaigns Posted
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <CheckCircle size={14} className="inline" /> Verified Sponsor
@@ -285,7 +329,7 @@ export default function CampaignDetails() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Remaining Balance</span>
-                <span className="font-bold text-gray-900">{120 - campaign.tokenCost} <Coins size={14} className="inline" /></span>
+                <span className="font-bold text-gray-900">{tokenBalance - campaign.tokenCost} <Coins size={14} className="inline" /></span>
               </div>
             </div>
 
@@ -297,10 +341,7 @@ export default function CampaignDetails() {
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  setIsApplying(false);
-                  alert("Application submitted successfully!");
-                }}
+                onClick={handleApply}
                 className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold transition-all duration-300 hover:shadow-lg"
               >
                 Confirm

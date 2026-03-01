@@ -9,7 +9,8 @@ class Campaign
     public static function findAll(?string $niche = null, ?string $search = null): array
     {
         $db = getDB();
-        $sql = "SELECT c.*, sp.company_name AS sponsor_name
+        $sql = "SELECT c.*, sp.company_name AS sponsor_name,
+                       (SELECT COUNT(*) FROM applications a WHERE a.campaign_id = c.campaign_id) AS applicant_count
                 FROM campaigns c
                 JOIN sponsor_profiles sp ON c.sponsor_id = sp.sponsor_id
                 WHERE c.status = 'active'";
@@ -164,15 +165,15 @@ class Campaign
              WHERE campaign_id = :id"
         );
         return $stmt->execute([
-            'title'     => $data['title'],
-            'desc'      => $data['description'] ?? '',
-            'niche'     => $data['niche'] ?? null,
-            'budget'    => $data['budget'] ?? null,
-            'deadline'  => $data['deadline'] ?? null,
+            'title' => $data['title'],
+            'desc' => $data['description'] ?? '',
+            'niche' => $data['niche'] ?? null,
+            'budget' => $data['budget'] ?? null,
+            'deadline' => $data['deadline'] ?? null,
             'platforms' => is_array($data['platforms'] ?? null) ? implode(',', $data['platforms']) : ($data['platforms'] ?? null),
-            'reqs'      => is_array($data['requirements'] ?? null) ? implode("\n", $data['requirements']) : ($data['requirements'] ?? null),
-            'delivs'    => is_array($data['deliverables'] ?? null) ? implode("\n", $data['deliverables']) : ($data['deliverables'] ?? null),
-            'id'        => $id,
+            'reqs' => is_array($data['requirements'] ?? null) ? implode("\n", $data['requirements']) : ($data['requirements'] ?? null),
+            'delivs' => is_array($data['deliverables'] ?? null) ? implode("\n", $data['deliverables']) : ($data['deliverables'] ?? null),
+            'id' => $id,
         ]);
     }
 
