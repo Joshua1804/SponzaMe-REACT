@@ -71,7 +71,7 @@ if (preg_match('#^/api/admin/(\w+)$#', $uri, $matches)) {
 }
 
 // Route: /api/tokens/{action}
-if (preg_match('#^/api/tokens/(\w+)$#', $uri, $matches)) {
+if (preg_match('#^/api/tokens/([\w-]+)$#', $uri, $matches)) {
     require_once __DIR__ . '/../routes/tokens.php';
     handleTokenRoutes($method, $matches[1]);
     exit;
