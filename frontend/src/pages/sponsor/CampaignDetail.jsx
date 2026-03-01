@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import ConfirmModal from "../../components/ConfirmModal";
 import { ToastContainer, useToast } from "../../components/Toast";
 import api from "../../api";
+import { ClipboardList, Pencil, Trash2, AlertTriangle, DollarSign, Target, CalendarDays, Coins, Smartphone, FileText, Package, Users, Search, Lock, Save } from "lucide-react";
 
 const PLATFORMS = [
   "Instagram",
@@ -205,8 +206,8 @@ export default function CampaignDetail() {
 
             <div className="reveal flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                  📋
+                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                  <ClipboardList size={24} className="text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl lg:text-3xl font-bold text-white">
@@ -237,14 +238,14 @@ export default function CampaignDetail() {
                       onClick={() => setEditing(true)}
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#5157a1] font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all"
                     >
-                      ✏️ Edit
+                      <Pencil size={16} className="inline" /> Edit
                     </button>
                   )}
                   <button
                     onClick={() => setShowDelete(true)}
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 text-red-100 border border-red-400/30 font-semibold hover:bg-red-500/20 transition-all"
                   >
-                    🗑️ Delete
+                    <Trash2 size={16} className="inline" /> Delete
                   </button>
                 </div>
               )}
@@ -268,8 +269,8 @@ export default function CampaignDetail() {
         {/* Error */}
         {error && !loading && (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center text-3xl mb-4">
-              ⚠️
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+              <AlertTriangle size={28} className="text-red-500" />
             </div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">
               Campaign Not Found
@@ -306,31 +307,31 @@ export default function CampaignDetail() {
                     value: campaign.budget
                       ? `₹${Number(campaign.budget).toLocaleString()}`
                       : "—",
-                    icon: "💰",
+                    icon: <DollarSign size={20} className="text-[#5157a1]" />,
                   },
                   {
                     label: "Niche",
                     value: campaign.niche || "—",
-                    icon: "🎯",
+                    icon: <Target size={20} className="text-[#5157a1]" />,
                   },
                   {
                     label: "Deadline",
                     value: campaign.deadline
                       ? new Date(campaign.deadline).toLocaleDateString()
                       : "—",
-                    icon: "📅",
+                    icon: <CalendarDays size={20} className="text-[#5157a1]" />,
                   },
                   {
                     label: "Token Cost",
                     value: campaign.token_cost ?? 2,
-                    icon: "🪙",
+                    icon: <Coins size={20} className="text-[#5157a1]" />,
                   },
                 ].map((stat) => (
                   <div
                     key={stat.label}
                     className="p-4 rounded-xl bg-gray-50 text-center"
                   >
-                    <div className="text-xl mb-1">{stat.icon}</div>
+                    <div className="mb-1 flex justify-center">{stat.icon}</div>
                     <p className="font-bold text-[#393873]">{stat.value}</p>
                     <p className="text-xs text-gray-400">{stat.label}</p>
                   </div>
@@ -342,7 +343,7 @@ export default function CampaignDetail() {
             {campaign.platforms && (
               <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                 <h3 className="font-bold text-[#393873] mb-3 flex items-center gap-2">
-                  📱 Target Platforms
+                  <Smartphone size={16} className="inline" /> Target Platforms
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {campaign.platforms.split(",").map((p, i) => (
@@ -362,7 +363,7 @@ export default function CampaignDetail() {
               {campaign.requirements && (
                 <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                   <h3 className="font-bold text-[#393873] mb-3 flex items-center gap-2">
-                    📝 Requirements
+                    <FileText size={16} className="inline" /> Requirements
                   </h3>
                   <p className="text-gray-600 text-sm whitespace-pre-wrap leading-relaxed">
                     {campaign.requirements}
@@ -372,7 +373,7 @@ export default function CampaignDetail() {
               {campaign.deliverables && (
                 <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                   <h3 className="font-bold text-[#393873] mb-3 flex items-center gap-2">
-                    📦 Deliverables
+                    <Package size={16} className="inline" /> Deliverables
                   </h3>
                   <p className="text-gray-600 text-sm whitespace-pre-wrap leading-relaxed">
                     {campaign.deliverables}
@@ -389,13 +390,13 @@ export default function CampaignDetail() {
                   to={`/sponsor/applicants?campaign=${id}`}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
                 >
-                  👥 View Applicants ({campaign.applicant_count ?? 0})
+                  <Users size={16} className="inline" /> View Applicants ({campaign.applicant_count ?? 0})
                 </Link>
                 <Link
                   to="/sponsor/creators"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5157a1]/10 text-[#5157a1] font-semibold hover:bg-[#5157a1]/20 transition-all text-sm"
                 >
-                  🔍 Invite Creators
+                  <Search size={16} className="inline" /> Invite Creators
                 </Link>
               </div>
             </div>
@@ -413,14 +414,14 @@ export default function CampaignDetail() {
           <form onSubmit={handleSave} className="space-y-6">
             {isClosed && (
               <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-600 font-medium">
-                🔒 This campaign is closed and cannot be edited.
+                <Lock size={16} className="inline" /> This campaign is closed and cannot be edited.
               </div>
             )}
 
             {/* Title + Description */}
             <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
               <h3 className="font-bold text-[#393873] mb-4 flex items-center gap-2">
-                ✏️ Basic Info
+                <Pencil size={16} className="inline" /> Basic Info
               </h3>
               <div className="space-y-4">
                 <div>
@@ -448,11 +449,10 @@ export default function CampaignDetail() {
                     className="w-full p-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/30 focus:border-[#5157a1] transition-all resize-none"
                   />
                   <p
-                    className={`text-xs mt-1 text-right ${
-                      form.description.length >= 500
+                    className={`text-xs mt-1 text-right ${form.description.length >= 500
                         ? "text-red-500 font-medium"
                         : "text-gray-400"
-                    }`}
+                      }`}
                   >
                     {form.description.length}/500
                   </p>
@@ -463,7 +463,7 @@ export default function CampaignDetail() {
             {/* Budget, Niche, Deadline */}
             <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
               <h3 className="font-bold text-[#393873] mb-4 flex items-center gap-2">
-                💰 Campaign Details
+                <DollarSign size={16} className="inline" /> Campaign Details
               </h3>
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
@@ -515,7 +515,7 @@ export default function CampaignDetail() {
             {/* Platforms */}
             <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
               <h3 className="font-bold text-[#393873] mb-4 flex items-center gap-2">
-                📱 Target Platforms
+                <Smartphone size={16} className="inline" /> Target Platforms
               </h3>
               <div className="flex flex-wrap gap-2">
                 {PLATFORMS.map((p) => (
@@ -525,10 +525,9 @@ export default function CampaignDetail() {
                     onClick={() => togglePlatform(p)}
                     aria-label={`Toggle ${p}`}
                     className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200
-                      ${
-                        form.platforms.includes(p)
-                          ? "bg-[#5157a1] text-white border-[#5157a1] shadow-md"
-                          : "bg-gray-50 text-gray-600 border-gray-200 hover:border-gray-300"
+                      ${form.platforms.includes(p)
+                        ? "bg-[#5157a1] text-white border-[#5157a1] shadow-md"
+                        : "bg-gray-50 text-gray-600 border-gray-200 hover:border-gray-300"
                       }`}
                   >
                     {p}
@@ -540,7 +539,7 @@ export default function CampaignDetail() {
             {/* Requirements & Deliverables */}
             <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
               <h3 className="font-bold text-[#393873] mb-4 flex items-center gap-2">
-                📝 Requirements & Deliverables
+                <FileText size={16} className="inline" /> Requirements & Deliverables
               </h3>
               <div className="grid lg:grid-cols-2 gap-4">
                 <div>
@@ -595,7 +594,7 @@ export default function CampaignDetail() {
                     Saving…
                   </span>
                 ) : (
-                  "💾 Save Changes"
+                  <><Save size={16} className="inline" /> Save Changes</>
                 )}
               </button>
             </div>

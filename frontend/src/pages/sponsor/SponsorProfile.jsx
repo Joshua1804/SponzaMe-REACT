@@ -4,6 +4,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { ToastContainer, useToast } from "../../components/Toast";
 import api from "../../api";
+import { AlertTriangle, Check, Factory, MapPin, Megaphone, Pencil, Save, FileText, ClipboardList, DollarSign, Smartphone, Target, Youtube, Camera, Twitter, Briefcase, Sparkles, Search, BarChart3, Lightbulb, Coins, X } from "lucide-react";
 
 export default function SponsorProfile() {
   const [searchParams] = useSearchParams();
@@ -67,7 +68,7 @@ export default function SponsorProfile() {
     api
       .get("/tokens/balance")
       .then((res) => setTokenBalance(res.data.balance || 0))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   /* ── Save profile ── */
@@ -87,7 +88,7 @@ export default function SponsorProfile() {
       .catch((err) =>
         addToast(
           "Failed to save profile: " +
-            (err.response?.data?.error || err.message),
+          (err.response?.data?.error || err.message),
           "error"
         )
       )
@@ -156,8 +157,8 @@ export default function SponsorProfile() {
       <div className="bg-gray-50 min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center h-[60vh] flex-col gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">
-            ⚠️
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center">
+            <AlertTriangle size={28} className="text-red-500" />
           </div>
           <p className="text-red-500">{error}</p>
           <button
@@ -205,7 +206,7 @@ export default function SponsorProfile() {
                   {profile.initials}
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-emerald-500 border-4 border-[#393873] flex items-center justify-center">
-                  <span className="text-white text-xs">✓</span>
+                  <Check size={14} className="text-white" />
                 </div>
               </div>
 
@@ -219,10 +220,10 @@ export default function SponsorProfile() {
                 {/* Tags */}
                 <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-6">
                   <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur text-white/90 text-sm font-medium border border-white/20">
-                    🏭 {profile.industry}
+                    <Factory size={14} className="inline" /> {profile.industry}
                   </span>
                   <span className="px-3 py-1 rounded-full bg-[#c7eff9]/20 text-[#c7eff9] text-sm font-medium border border-[#c7eff9]/30 flex items-center gap-1">
-                    📍 {profile.location}
+                    <MapPin size={14} className="inline" /> {profile.location}
                   </span>
                 </div>
 
@@ -233,7 +234,7 @@ export default function SponsorProfile() {
                       {profile.stats.campaignsPosted}
                     </p>
                     <p className="text-xs text-white/60 flex items-center justify-center gap-1">
-                      <span>📢</span>
+                      <Megaphone size={14} />
                       Campaigns
                     </p>
                   </div>
@@ -245,7 +246,7 @@ export default function SponsorProfile() {
                 onClick={() => setIsEditing(!isEditing)}
                 className="reveal delay-2 px-6 py-3 rounded-xl bg-white text-[#5157a1] font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex items-center gap-2"
               >
-                <span>✏️</span>
+                <Pencil size={16} />
                 {isEditing ? "Close Editor" : "Edit Profile"}
               </button>
             </div>
@@ -259,13 +260,13 @@ export default function SponsorProfile() {
           <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-[#393873] flex items-center gap-2">
-                <span>✏️</span> Edit Company Profile
+                <Pencil size={16} className="inline" /> Edit Company Profile
               </h2>
               <button
                 onClick={() => setIsEditing(false)}
                 className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-all"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
 
@@ -282,35 +283,40 @@ export default function SponsorProfile() {
                   key: "industry",
                   type: "text",
                   placeholder: "e.g. Consumer Electronics",
+                  icon: <Factory size={14} />,
                 },
                 {
                   label: "Location",
                   key: "location",
                   type: "text",
                   placeholder: "e.g. Bangalore, India",
+                  icon: <MapPin size={14} />,
                 },
                 {
                   label: "Budget Range",
                   key: "budget_range",
                   type: "text",
                   placeholder: "e.g. ₹50,000 – ₹5,00,000",
+                  icon: <DollarSign size={14} />,
                 },
                 {
                   label: "Hiring For",
                   key: "hiring_for",
                   type: "text",
                   placeholder: "e.g. Tech Reviews,Reels",
+                  icon: <BriefcaseBusiness size={14} />,
                 },
                 {
                   label: "Platforms",
                   key: "platforms",
                   type: "text",
                   placeholder: "e.g. YouTube,Instagram",
+                  icon: <Monitor size={14} />,
                 },
               ].map((f) => (
                 <div key={f.key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    {f.label}
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                    {f.icon} {f.label}
                   </label>
                   <input
                     type={f.type}
@@ -327,16 +333,16 @@ export default function SponsorProfile() {
                 </div>
               ))}
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  About Company
+                <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                  <FileText size={14} /> About Company
                 </label>
                 <textarea
                   rows={3}
-                  value={editData.description || ""}
+                  value={editData.bio || ""}
                   onChange={(e) =>
                     setEditData({
                       ...editData,
-                      description: e.target.value,
+                      bio: e.target.value,
                     })
                   }
                   placeholder="Tell creators about your company..."
@@ -357,7 +363,9 @@ export default function SponsorProfile() {
                     Saving…
                   </span>
                 ) : (
-                  "💾 Save Profile"
+                  <>
+                    <Coins size={18} className="inline-block mr-2" /> Save Profile
+                  </>
                 )}
               </button>
               <button
@@ -382,7 +390,7 @@ export default function SponsorProfile() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                      📝
+                      <FileText size={20} />
                     </span>
                     About Company
                   </h2>
@@ -396,7 +404,7 @@ export default function SponsorProfile() {
               <div className="reveal delay-1 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
                   <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                    📋
+                    <ClipboardList size={20} />
                   </span>
                   Campaign Preferences
                 </h2>
@@ -405,22 +413,22 @@ export default function SponsorProfile() {
                     {
                       label: "Industry",
                       value: profile.industry,
-                      icon: "🏭",
+                      icon: <Factory size={20} />,
                     },
                     {
                       label: "Budget Range",
                       value: profile.budgetRange,
-                      icon: "💰",
+                      icon: <DollarSign size={20} />,
                     },
                     {
                       label: "Platforms",
                       value: profile.platforms.join(", ") || "—",
-                      icon: "📱",
+                      icon: <Monitor size={20} />,
                     },
                     {
                       label: "Hiring For",
                       value: profile.hiringFor.join(", ") || "—",
-                      icon: "🎯",
+                      icon: <Target size={20} />,
                     },
                   ].map((detail, i) => (
                     <div key={i} className="group">
@@ -447,7 +455,7 @@ export default function SponsorProfile() {
                 <div className="reveal delay-2 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
                     <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                      📱
+                      <Monitor size={20} />
                     </span>
                     Target Platforms
                   </h2>
@@ -458,15 +466,17 @@ export default function SponsorProfile() {
                         className="group bg-gray-50 rounded-xl p-4 hover:bg-gradient-to-r hover:from-[#5157a1]/5 hover:to-transparent transition-all duration-300 flex items-center gap-3"
                       >
                         <div className="w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                          {p.trim().toLowerCase() === "youtube"
-                            ? "🎬"
-                            : p.trim().toLowerCase() === "instagram"
-                            ? "📸"
-                            : p.trim().toLowerCase() === "twitter"
-                            ? "🐦"
-                            : p.trim().toLowerCase() === "linkedin"
-                            ? "💼"
-                            : "📱"}
+                          {p.trim().toLowerCase() === "youtube" ? (
+                            <Youtube size={24} className="text-red-500" />
+                          ) : p.trim().toLowerCase() === "instagram" ? (
+                            <Camera size={24} className="text-pink-500" />
+                          ) : p.trim().toLowerCase() === "twitter" ? (
+                            <Twitter size={24} className="text-blue-400" />
+                          ) : p.trim().toLowerCase() === "linkedin" ? (
+                            <Briefcase size={24} className="text-blue-700" />
+                          ) : (
+                            <Monitor size={24} className="text-gray-600" />
+                          )}
                         </div>
                         <span className="font-semibold text-gray-900 capitalize">
                           {p.trim()}
@@ -489,25 +499,25 @@ export default function SponsorProfile() {
                   {[
                     {
                       label: "Post New Campaign",
-                      icon: "✨",
+                      icon: <Sparkles size={20} />,
                       link: "/sponsor/create-campaign",
                       color: "from-indigo-500 to-purple-500",
                     },
                     {
                       label: "My Campaigns",
-                      icon: "📢",
+                      icon: <Megaphone size={20} />,
                       link: "/sponsor/my-campaigns",
                       color: "from-blue-500 to-indigo-500",
                     },
                     {
                       label: "Browse Creators",
-                      icon: "🔍",
+                      icon: <Search size={20} />,
                       link: "/sponsor/creators",
                       color: "from-emerald-500 to-teal-500",
                     },
                     {
                       label: "Dashboard",
-                      icon: "📊",
+                      icon: <LayoutDashboard size={20} />,
                       link: "/sponsor/dashboard",
                       color: "from-amber-500 to-orange-500",
                     },
@@ -547,7 +557,7 @@ export default function SponsorProfile() {
               <div className="reveal delay-2 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg">
-                    <span className="text-white text-xl">✓</span>
+                    <Check size={24} className="text-white" />
                   </div>
                   <div>
                     <h3 className="font-bold text-emerald-800">
@@ -568,7 +578,7 @@ export default function SponsorProfile() {
               <div className="reveal delay-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg">
-                    🪙
+                    <Coins size={24} className="text-white" />
                   </div>
                   <div>
                     <p className="text-sm text-amber-600">
@@ -609,7 +619,7 @@ export default function SponsorProfile() {
                 {strength.pct < 100 && (
                   <div className="mt-4 space-y-2">
                     <p className="text-xs text-gray-500">
-                      💡 Tips to improve:
+                      <Lightbulb size={14} className="inline-block mr-1" /> Tips to improve:
                     </p>
                     <ul className="text-xs text-gray-600 space-y-1">
                       {profile.bio === "No bio yet." && (

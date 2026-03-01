@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Palette, Building2, Rocket, Star, Target, BarChart3, TrendingUp, DollarSign, Search, ClipboardList, CheckCircle, UserCircle, Clapperboard } from "lucide-react";
 
 export default function Landing() {
   const [stats, setStats] = useState({ creators: 0, sponsors: 0, campaigns: 0 });
@@ -195,13 +196,13 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { value: `${stats.creators.toLocaleString()}+`, label: "Active Creators", icon: "👨‍🎨" },
-              { value: `${stats.sponsors.toLocaleString()}+`, label: "Brand Partners", icon: "🏢" },
-              { value: `${stats.campaigns.toLocaleString()}+`, label: "Campaigns Created", icon: "🚀" },
-              { value: "98%", label: "Satisfaction Rate", icon: "⭐" },
+              { value: `${stats.creators.toLocaleString()}+`, label: "Active Creators", icon: <Palette size={28} className="text-[#5157a1]" /> },
+              { value: `${stats.sponsors.toLocaleString()}+`, label: "Brand Partners", icon: <Building2 size={28} className="text-[#5157a1]" /> },
+              { value: `${stats.campaigns.toLocaleString()}+`, label: "Campaigns Created", icon: <Rocket size={28} className="text-[#5157a1]" /> },
+              { value: "98%", label: "Satisfaction Rate", icon: <Star size={28} className="text-amber-500" /> },
             ].map((stat, i) => (
               <div key={i} className="text-center group">
-                <div className="text-3xl mb-2 transition-transform group-hover:scale-125">{stat.icon}</div>
+                <div className="mb-2 transition-transform group-hover:scale-125 flex justify-center">{stat.icon}</div>
                 <div className="text-3xl lg:text-4xl font-bold text-[#393873] mb-1">{stat.value}</div>
                 <div className="text-sm text-gray-500">{stat.label}</div>
               </div>
@@ -316,10 +317,10 @@ export default function Landing() {
                 gradient: "from-[#c7eff9] to-[#5157a1]/10",
                 borderColor: "border-[#c7eff9]",
                 items: [
-                  { icon: "🎯", text: "Discover sponsorship opportunities tailored to your niche" },
-                  { icon: "📊", text: "Build a professional profile that showcases your work" },
-                  { icon: "📈", text: "Track applications and responses in real-time" },
-                  { icon: "💰", text: "Secure payments and transparent agreements" },
+                  { icon: <Target size={22} className="text-[#5157a1]" />, text: "Discover sponsorship opportunities tailored to your niche" },
+                  { icon: <BarChart3 size={22} className="text-[#5157a1]" />, text: "Build a professional profile that showcases your work" },
+                  { icon: <TrendingUp size={22} className="text-[#5157a1]" />, text: "Track applications and responses in real-time" },
+                  { icon: <DollarSign size={22} className="text-[#5157a1]" />, text: "Secure payments and transparent agreements" },
                 ],
               },
               {
@@ -327,10 +328,10 @@ export default function Landing() {
                 gradient: "from-[#e7bdd3] to-[#5157a1]/10",
                 borderColor: "border-[#e7bdd3]",
                 items: [
-                  { icon: "🔍", text: "Find creators that align with your brand values" },
-                  { icon: "📋", text: "Manage multiple campaigns from one dashboard" },
-                  { icon: "✅", text: "Review applications with detailed creator insights" },
-                  { icon: "📊", text: "Track campaign performance and ROI metrics" },
+                  { icon: <Search size={22} className="text-[#5157a1]" />, text: "Find creators that align with your brand values" },
+                  { icon: <ClipboardList size={22} className="text-[#5157a1]" />, text: "Manage multiple campaigns from one dashboard" },
+                  { icon: <CheckCircle size={22} className="text-[#5157a1]" />, text: "Review applications with detailed creator insights" },
+                  { icon: <BarChart3 size={22} className="text-[#5157a1]" />, text: "Track campaign performance and ROI metrics" },
                 ],
               },
             ].map((card, i) => (
@@ -346,7 +347,7 @@ export default function Landing() {
                 <ul className="space-y-5">
                   {card.items.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-4 group/item">
-                      <span className="text-2xl transition-transform group-hover/item:scale-125">{item.icon}</span>
+                      <span className="transition-transform group-hover/item:scale-125 flex items-center">{item.icon}</span>
                       <span className="text-gray-600 leading-relaxed pt-1">{item.text}</span>
                     </li>
                   ))}
@@ -380,19 +381,19 @@ export default function Landing() {
                 quote: "SponzaMe helped me land my first major sponsorship deal. The platform is intuitive and the opportunities are endless!",
                 name: "Sarah Chen",
                 role: "Content Creator",
-                avatar: "👩‍🎨",
+                avatar: <Palette size={24} className="text-[#5157a1]" />,
               },
               {
                 quote: "We've found amazing creators who truly understand our brand. The quality of partnerships has exceeded our expectations.",
                 name: "Michael Ross",
                 role: "Marketing Director",
-                avatar: "👨‍💼",
+                avatar: <UserCircle size={24} className="text-[#5157a1]" />,
               },
               {
                 quote: "The structured workflow makes collaboration so much easier. I can focus on creating while SponzaMe handles the rest.",
                 name: "Alex Rivera",
                 role: "YouTuber",
-                avatar: "🎬",
+                avatar: <Clapperboard size={24} className="text-[#5157a1]" />,
               },
             ].map((testimonial, i) => (
               <div
@@ -411,7 +412,7 @@ export default function Landing() {
                 <p className="text-gray-600 mb-6 leading-relaxed italic">"{testimonial.quote}"</p>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c7eff9] to-[#e7bdd3] flex items-center justify-center text-2xl">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c7eff9] to-[#e7bdd3] flex items-center justify-center">
                     {testimonial.avatar}
                   </div>
                   <div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { Coins, ShoppingCart, PartyPopper, ClipboardList, TrendingDown, CheckCircle, Gift, Calendar, ScrollText, Check } from "lucide-react";
 import api from "../../api";
 
 export default function TokenUsage() {
@@ -22,7 +23,7 @@ export default function TokenUsage() {
                     description: t.description,
                     amount: t.amount,
                     date: new Date(t.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
-                    icon: t.type === "purchased" ? "🛒" : t.type === "earned" ? "🎉" : "📋",
+                    icon: t.type === "purchased" ? <ShoppingCart size={20} /> : t.type === "earned" ? <PartyPopper size={20} /> : <ClipboardList size={20} />,
                 }));
                 setTransactions(txs);
                 setStats({
@@ -87,8 +88,8 @@ export default function TokenUsage() {
                             {/* Token Balance Card */}
                             <div className="reveal delay-1 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl px-8 py-6 min-w-[220px] shadow-2xl">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl">
-                                        🪙
+                                    <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+                                        <Coins size={28} className="text-white" />
                                     </div>
                                     <div>
                                         <p className="text-sm text-white/80">Current Balance</p>
@@ -106,21 +107,21 @@ export default function TokenUsage() {
                 <div className="max-w-5xl mx-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
-                            { label: "Total Earned", value: stats.totalEarned, icon: "🎉", color: "from-emerald-400 to-green-500" },
-                            { label: "Total Spent", value: stats.totalSpent, icon: "💸", color: "from-red-400 to-pink-500" },
-                            { label: "Total Purchased", value: stats.totalPurchased, icon: "🛒", color: "from-blue-400 to-indigo-500" },
+                            { label: "Total Earned", value: stats.totalEarned, icon: <PartyPopper size={22} className="text-white" />, color: "from-emerald-400 to-green-500" },
+                            { label: "Total Spent", value: stats.totalSpent, icon: <TrendingDown size={22} className="text-white" />, color: "from-red-400 to-pink-500" },
+                            { label: "Total Purchased", value: stats.totalPurchased, icon: <ShoppingCart size={22} className="text-white" />, color: "from-blue-400 to-indigo-500" },
                         ].map((stat, i) => (
                             <div
                                 key={i}
                                 className={`reveal delay-${i + 1} bg-white rounded-2xl p-5 shadow-lg shadow-gray-200/50 border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl shadow-md`}>
+                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-md`}>
                                         {stat.icon}
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">{stat.label}</p>
-                                        <p className="text-2xl font-bold text-gray-900">{stat.value} 🪙</p>
+                                        <p className="text-2xl font-bold text-gray-900 flex items-center gap-1">{stat.value} <Coins size={18} className="text-amber-500" /></p>
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +140,7 @@ export default function TokenUsage() {
                                 <div className="p-6 border-b border-gray-100">
                                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                                         <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                                            📜
+                                            <ScrollText size={16} className="text-[#5157a1]" />
                                         </span>
                                         Transaction History
                                     </h2>
@@ -152,7 +153,7 @@ export default function TokenUsage() {
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-4">
-                                                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl ${tx.type === "earned" ? "bg-emerald-100" :
+                                                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${tx.type === "earned" ? "bg-emerald-100" :
                                                         tx.type === "purchased" ? "bg-blue-100" :
                                                             "bg-red-100"
                                                         }`}>
@@ -165,7 +166,7 @@ export default function TokenUsage() {
                                                 </div>
                                                 <div className={`text-lg font-bold ${tx.amount > 0 ? "text-emerald-600" : "text-red-500"
                                                     }`}>
-                                                    {tx.amount > 0 ? "+" : ""}{tx.amount} 🪙
+                                                    <span className="flex items-center gap-1">{tx.amount > 0 ? "+" : ""}{tx.amount} <Coins size={16} className="text-amber-500" /></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -179,8 +180,8 @@ export default function TokenUsage() {
                             {/* Buy Tokens Card */}
                             <div className="reveal delay-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6">
                                 <div className="text-center mb-6">
-                                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-3xl shadow-lg">
-                                        🪙
+                                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+                                        <Coins size={28} className="text-white" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">Need More Tokens?</h3>
                                     <p className="text-sm text-gray-600">
@@ -200,14 +201,14 @@ export default function TokenUsage() {
                                 <h3 className="font-bold text-gray-900 mb-4">How to Earn Tokens</h3>
                                 <div className="space-y-3">
                                     {[
-                                        { text: "Complete campaigns successfully", icon: "✅", tokens: "+10-20" },
-                                        { text: "Refer other creators", icon: "🎁", tokens: "+10" },
-                                        { text: "Daily login bonus", icon: "📅", tokens: "+1" },
-                                        { text: "Profile verification", icon: "✓", tokens: "+5" },
+                                        { text: "Complete campaigns successfully", icon: <CheckCircle size={18} className="text-emerald-500" />, tokens: "+10-20" },
+                                        { text: "Refer other creators", icon: <Gift size={18} className="text-pink-500" />, tokens: "+10" },
+                                        { text: "Daily login bonus", icon: <Calendar size={18} className="text-blue-500" />, tokens: "+1" },
+                                        { text: "Profile verification", icon: <Check size={18} className="text-indigo-500" />, tokens: "+5" },
                                     ].map((item, i) => (
                                         <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                                             <div className="flex items-center gap-3">
-                                                <span className="text-lg">{item.icon}</span>
+                                                <span>{item.icon}</span>
                                                 <span className="text-sm text-gray-700">{item.text}</span>
                                             </div>
                                             <span className="text-sm font-semibold text-emerald-600">{item.tokens}</span>

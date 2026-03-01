@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
+import { Sprout, Star, Crown, Coins, Package, CreditCard, Smartphone, Landmark, Lock, ShieldCheck, MessageCircle, Check } from "lucide-react";
 
 // Load Razorpay checkout script
 function loadRazorpayScript() {
