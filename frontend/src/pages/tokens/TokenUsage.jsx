@@ -11,10 +11,13 @@ export default function TokenUsage() {
     const [stats, setStats] = useState({ totalEarned: 0, totalSpent: 0, totalPurchased: 0 });
 
     useEffect(() => {
-        api.get("/creator/tokens")
-            .then(res => {
-                setTokenBalance(res.data.balance || 0);
-                const txs = (res.data.transactions || []).map((t, i) => ({
+        Promise.all([
+            api.get("/tokens/balance"),
+            api.get("/tokens/history"),
+        ])
+            .then(([balanceRes, historyRes]) => {
+                setTokenBalance(balanceRes.data.balance || 0);
+                const txs = (historyRes.data.transactions || []).map((t, i) => ({
                     id: t.transaction_id || i,
                     type: t.type,
                     description: t.description,

@@ -18,9 +18,16 @@ function handleTokenRoutes(string $method, string $action): void
             }
             break;
 
-        case 'purchase':
+        case 'create-order':
             if ($method === 'POST') {
-                TokenController::purchase();
+                TokenController::createOrder();
+                return;
+            }
+            break;
+
+        case 'verify-payment':
+            if ($method === 'POST') {
+                TokenController::verifyPayment();
                 return;
             }
             break;
