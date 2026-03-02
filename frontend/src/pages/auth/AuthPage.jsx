@@ -141,17 +141,6 @@ export default function AuthPage() {
                 <h2>Welcome Back</h2>
                 <p className="auth-sub">Sign in to continue to your dashboard</p>
 
-                <div className="auth-socials">
-                  <button className="auth-social-btn" type="button" aria-label="Sign in with Google">
-                    <FcGoogle /> Google
-                  </button>
-                  <button className="auth-social-btn" type="button" aria-label="Sign in with GitHub">
-                    <FaGithub /> GitHub
-                  </button>
-                </div>
-
-                <div className="auth-or"><span>or</span></div>
-
                 {!isSignUp && error && (
                   <div className="auth-error">{error}</div>
                 )}

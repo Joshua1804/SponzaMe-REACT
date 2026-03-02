@@ -117,3 +117,19 @@ CREATE TABLE IF NOT EXISTS token_transactions (
         REFERENCES users(user_id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+
+-- =============================================
+-- Seed: Hardcoded Admin User
+-- Password: 01012026 (bcrypt hashed)
+-- =============================================
+INSERT IGNORE INTO users (user_id, name, email, password, role, is_active, token_count)
+VALUES (
+    111,
+    'Admin',
+    'admin@sponzame.com',
+    '$2b$12$7i3aG3H.EF1ctn7GEz2qu.zQh3AvnSDJLYk2quii0I0KIgcuV0L4a',
+    'admin',
+    1,
+    0
+);
