@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Campaign.php';
 require_once __DIR__ . '/../models/Application.php';
+require_once __DIR__ . '/../models/TokenTransaction.php';
 
 class SponsorController
 {
@@ -96,11 +97,26 @@ class SponsorController
         if (!empty($data['deadline'])) {
             $d = date('Y-m-d', strtotime($data['deadline']));
             $data['deadline'] = ($d && $d !== '1970-01-01') ? $d : null;
-        } else {
+        }
+        else {
             $data['deadline'] = null;
         }
 
         try {
+            // Deduct tokens for creating a campaign
+            $cost = (int)($data['token_cost'] ?? 2);
+            $deducted = TokenTransaction::deductTokens(
+                $userId,
+                $cost,
+                "Created campaign '{$data['title']}'"
+            );
+
+            if (!$deducted) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Insufficient tokens. You need ' . $cost . ' tokens to create a campaign.']);
+                return;
+            }
+
             $campaign = Campaign::create($userId, $data);
             if (!$campaign) {
                 http_response_code(400);
@@ -110,7 +126,8 @@ class SponsorController
 
             http_response_code(201);
             echo json_encode(['message' => 'Campaign created.', 'campaign' => $campaign]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
         }
@@ -232,8 +249,8 @@ class SponsorController
         $userId = $_SESSION['user_id'];
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $campaignId = (int) ($data['campaign_id'] ?? 0);
-        $creatorUserId = (int) ($data['creator_user_id'] ?? 0);
+        $campaignId = (int)($data['campaign_id'] ?? 0);
+        $creatorUserId = (int)($data['creator_user_id'] ?? 0);
 
         if (!$campaignId || !$creatorUserId) {
             http_response_code(400);
@@ -315,7 +332,8 @@ class SponsorController
     {
         $userId = $_SESSION['user_id'];
         $campaign = Campaign::findById($campaignId);
-        if (!$campaign) return null;
+        if (!$campaign)
+            return null;
 
         // Check ownership via sponsor_profiles
         $db = getDB();
@@ -379,14 +397,16 @@ class SponsorController
         // Sanitise budget
         if (!empty($data['budget'])) {
             $data['budget'] = preg_replace('/[^0-9.]/', '', $data['budget']);
-            if ($data['budget'] === '') $data['budget'] = null;
+            if ($data['budget'] === '')
+                $data['budget'] = null;
         }
 
         // Sanitise deadline
         if (!empty($data['deadline'])) {
             $d = date('Y-m-d', strtotime($data['deadline']));
             $data['deadline'] = ($d && $d !== '1970-01-01') ? $d : null;
-        } else {
+        }
+        else {
             $data['deadline'] = null;
         }
 

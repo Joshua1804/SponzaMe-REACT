@@ -92,6 +92,24 @@ class CreatorController
         $applicantCount = Campaign::countApplicants($id);
         $campaign['applicant_count'] = $applicantCount;
 
+        // Count how many campaigns this sponsor has posted
+        $db = getDB();
+        $stmt = $db->prepare("SELECT COUNT(*) FROM campaigns WHERE sponsor_id = :sid");
+        $stmt->execute(['sid' => $campaign['sponsor_id']]);
+        $campaign['sponsor_campaign_count'] = (int)$stmt->fetchColumn();
+
+        // Check if the current creator has already applied
+        $userId = $_SESSION['user_id'];
+        $stmt = $db->prepare("SELECT creator_id FROM creator_profiles WHERE user_id = :uid");
+        $stmt->execute(['uid' => $userId]);
+        $creator = $stmt->fetch(PDO::FETCH_ASSOC);
+        $campaign['has_applied'] = false;
+        if ($creator) {
+            $stmt = $db->prepare("SELECT application_id FROM applications WHERE campaign_id = :cid AND creator_id = :crid");
+            $stmt->execute(['cid' => $id, 'crid' => $creator['creator_id']]);
+            $campaign['has_applied'] = (bool)$stmt->fetch();
+        }
+
         echo json_encode(['campaign' => $campaign]);
     }
 
