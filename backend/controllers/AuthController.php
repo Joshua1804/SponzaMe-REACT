@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/EmailService.php';
 
 class AuthController
 {
@@ -54,12 +55,93 @@ class AuthController
             return;
         }
 
-        // ── Create user & start session ──
+        // ── Create user (unverified) ──
         $user = User::create($name, $email, $password, $role);
+
+        // ── Generate verification token & send email ──
+        $token = User::createVerificationToken((int)$user['user_id']);
+        $emailSent = EmailService::sendVerificationEmail($email, $name, $token);
+
+        if (!$emailSent) {
+            // Account created but email failed — log it, let user know
+            http_response_code(201);
+            echo json_encode([
+                'message' => 'Account created, but verification email could not be sent. Please contact support.',
+                'needsVerification' => true,
+                'user' => $user,
+            ]);
+            return;
+        }
+
+        // Don't start session — user must verify first
+        http_response_code(201);
+        echo json_encode([
+            'message' => 'Account created! Please check your email to verify your account.',
+            'needsVerification' => true,
+        ]);
+    }
+
+    /**
+     * GET /api/auth/verify-email?token=...
+     */
+    public static function verifyEmail(): void
+    {
+        $token = $_GET['token'] ?? '';
+
+        if ($token === '') {
+            http_response_code(400);
+            echo json_encode(['error' => 'Verification token is required.']);
+            return;
+        }
+
+        $user = User::verifyToken($token);
+
+        if (!$user) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid or expired verification link. Please sign up again.']);
+            return;
+        }
+
+        // Start session after verification
         $_SESSION['user_id'] = $user['user_id'];
 
-        http_response_code(201);
-        echo json_encode(['message' => 'Account created successfully.', 'user' => $user]);
+        echo json_encode([
+            'message' => 'Email verified successfully! You are now logged in.',
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * POST /api/auth/resend-verification
+     */
+    public static function resendVerification(): void
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $email = trim($data['email'] ?? '');
+
+        if ($email === '') {
+            http_response_code(400);
+            echo json_encode(['error' => 'Email is required.']);
+            return;
+        }
+
+        $user = User::findByEmail($email);
+
+        if (!$user) {
+            // Don't reveal if email exists or not
+            echo json_encode(['message' => 'If an account exists with this email, a verification link has been sent.']);
+            return;
+        }
+
+        if ($user['is_verified']) {
+            echo json_encode(['message' => 'This email is already verified. You can log in.']);
+            return;
+        }
+
+        $token = User::createVerificationToken((int)$user['user_id']);
+        EmailService::sendVerificationEmail($email, $user['name'], $token);
+
+        echo json_encode(['message' => 'If an account exists with this email, a verification link has been sent.']);
     }
 
     /**
@@ -89,6 +171,17 @@ class AuthController
         if (!$user['is_active']) {
             http_response_code(403);
             echo json_encode(['error' => 'Your account has been deactivated.']);
+            return;
+        }
+
+        // ── Check email verification ──
+        if (!$user['is_verified']) {
+            http_response_code(403);
+            echo json_encode([
+                'error' => 'Please verify your email before logging in. Check your inbox for the verification link.',
+                'needsVerification' => true,
+                'email' => $email,
+            ]);
             return;
         }
 

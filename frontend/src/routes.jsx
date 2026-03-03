@@ -4,6 +4,7 @@ import Landing from "./pages/Landing"
 import About from "./pages/About"
 import Contact from "./pages/Contact"
 import AuthPage from "./pages/auth/AuthPage"
+import VerifyEmail from "./pages/auth/VerifyEmail"
 import CreatorDashboard from "./pages/creator/CreatorDashboard"
 import CreatorProfile from "./pages/creator/CreatorProfile"
 import BrowseCampaigns from "./pages/creator/BrowseCampaigns"
@@ -32,6 +33,7 @@ export default function AppRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<AuthPage />} />
         <Route path="/login" element={<AuthPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Creator routes */}
         <Route path="/creator/dashboard" element={<ProtectedRoute role="creator"><CreatorDashboard /></ProtectedRoute>} />

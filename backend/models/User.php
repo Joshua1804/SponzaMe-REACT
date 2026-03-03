@@ -16,7 +16,7 @@ class User
     {
         $db = getDB();
         $stmt = $db->prepare(
-            'SELECT user_id, name, email, role, is_active, token_count, created_at FROM users WHERE user_id = :id'
+            'SELECT user_id, name, email, role, is_active, is_verified, token_count, created_at FROM users WHERE user_id = :id'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -226,5 +226,61 @@ class User
             'sponsors' => $sponsors,
             'active' => $active,
         ];
+    }
+
+    // ─── Email Verification ───
+
+    /**
+     * Create a verification token for a user. Returns the token string.
+     */
+    public static function createVerificationToken(int $userId): string
+    {
+        $db = getDB();
+        $token = bin2hex(random_bytes(32)); // 64-char hex token
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
+
+        // Delete any existing tokens for this user
+        $stmt = $db->prepare('DELETE FROM email_verifications WHERE user_id = :uid');
+        $stmt->execute(['uid' => $userId]);
+
+        // Insert new token
+        $stmt = $db->prepare(
+            'INSERT INTO email_verifications (user_id, token, expires_at) VALUES (:uid, :token, :expires)'
+        );
+        $stmt->execute([
+            'uid'     => $userId,
+            'token'   => $token,
+            'expires' => $expiresAt,
+        ]);
+
+        return $token;
+    }
+
+    /**
+     * Verify a token. Returns the user array on success, null on failure.
+     */
+    public static function verifyToken(string $token): ?array
+    {
+        $db = getDB();
+
+        $stmt = $db->prepare(
+            'SELECT * FROM email_verifications WHERE token = :token AND expires_at > NOW()'
+        );
+        $stmt->execute(['token' => $token]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            return null;
+        }
+
+        // Mark user as verified
+        $stmt = $db->prepare('UPDATE users SET is_verified = 1 WHERE user_id = :uid');
+        $stmt->execute(['uid' => $row['user_id']]);
+
+        // Delete used token
+        $stmt = $db->prepare('DELETE FROM email_verifications WHERE user_id = :uid');
+        $stmt->execute(['uid' => $row['user_id']]);
+
+        return self::findById((int)$row['user_id']);
     }
 }
