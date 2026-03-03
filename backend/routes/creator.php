@@ -57,6 +57,20 @@ function handleCreatorRoutes(string $method, string $action, ?int $id = null, ?s
             }
             break;
 
+        case 'application':
+            if ($id !== null && $subAction === 'contact' && $method === 'GET') {
+                CreatorController::viewContact($id);
+                return;
+            }
+            break;
+
+        case 'invitation':
+            if ($id !== null && $subAction === 'respond' && $method === 'POST') {
+                CreatorController::respondToInvitation($id);
+                return;
+            }
+            break;
+
         case 'tokens':
             if ($method === 'GET') {
                 CreatorController::tokens();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardList, Handshake, Clock, XCircle, Coins, MapPin, Users, Smartphone, Gamepad2, TabletSmartphone, Search, FileText, ShoppingCart } from "lucide-react";
+import { ClipboardList, Handshake, Clock, XCircle, Coins, MapPin, Users, Smartphone, Gamepad2, TabletSmartphone, Search, FileText, ShoppingCart, Send } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -41,6 +41,7 @@ export default function CreatorDashboard() {
         setProfileData(d.profile || null);
         setApplications((d.recent_applications || []).map(a => ({
           id: a.application_id,
+          campaignId: a.campaign_id,
           campaign: a.campaign_title,
           status: a.status.charAt(0).toUpperCase() + a.status.slice(1),
           budget: a.budget ? `₹${Number(a.budget).toLocaleString()}` : "—",
@@ -53,6 +54,7 @@ export default function CreatorDashboard() {
 
   const quickStats = [
     { label: "Applications", value: String(stats.total || 0), icon: <ClipboardList size={24} />, color: "from-[#c7eff9] to-[#5157a1]/20", link: "/creator/applications" },
+    { label: "Invited", value: String(stats.invited || 0), icon: <Send size={24} />, color: "from-blue-100 to-blue-200", link: "/creator/applications?filter=invited" },
     { label: "Accepted", value: String(stats.accepted || 0), icon: <Handshake size={24} />, color: "from-[#e7bdd3] to-[#5157a1]/20", link: "/creator/applications?filter=accepted" },
     { label: "Pending", value: String(stats.pending || 0), icon: <Clock size={24} />, color: "from-[#c7eff9] to-[#e7bdd3]", link: "/creator/applications?filter=pending" },
     { label: "Rejected", value: String(stats.rejected || 0), icon: <XCircle size={24} />, color: "from-[#5157a1]/20 to-[#c7eff9]", link: "/creator/applications?filter=rejected" },
@@ -92,7 +94,7 @@ export default function CreatorDashboard() {
 
               {/* Token Balance Card - Clickable */}
               <Link
-                to="/creator/tokens"
+                to="/user/tokens"
                 className="reveal delay-1 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 px-6 py-5 min-w-[200px] transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-xl cursor-pointer group"
               >
                 <div className="flex items-center gap-4">
@@ -247,7 +249,7 @@ export default function CreatorDashboard() {
                         </td>
                         <td className="py-4 px-4 text-right">
                           <Link
-                            to={`/creator/campaign/${app.id}`}
+                            to={`/creator/campaign/${app.campaignId}`}
                             className="text-[#5157a1] hover:text-[#393873] font-medium text-sm transition-colors"
                           >
                             View Details
@@ -266,7 +268,7 @@ export default function CreatorDashboard() {
             {[
               { title: "Browse Campaigns", desc: "Find new opportunities", icon: <Search size={24} />, color: "from-[#c7eff9] to-[#5157a1]/30", link: "/creator/campaigns" },
               { title: "My Applications", desc: "Track your applications", icon: <FileText size={24} />, color: "from-[#e7bdd3] to-[#5157a1]/30", link: "/creator/applications" },
-              { title: "Token Usage", desc: "View token history", icon: <Coins size={24} />, color: "from-amber-100 to-orange-200", link: "/creator/tokens" },
+              { title: "Token Usage", desc: "View token history", icon: <Coins size={24} />, color: "from-amber-100 to-orange-200", link: "/user/tokens" },
               { title: "Buy Tokens", desc: "Get more tokens", icon: <ShoppingCart size={24} />, color: "from-[#c7eff9] to-[#e7bdd3]", link: "/user/shop" },
             ].map((action, i) => (
               <Link

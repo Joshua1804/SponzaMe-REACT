@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { MapPin, Users, Target, Star, CheckCircle, Pencil, FileText, ClipboardList, DollarSign, Smartphone, BarChart3, Search, Settings, Check, Coins, Lightbulb, Save, Youtube, Camera, Twitter } from "lucide-react";
+import { MapPin, Users, Target, Star, CheckCircle, Pencil, FileText, ClipboardList, DollarSign, Smartphone, BarChart3, Search, Check, Coins, Lightbulb, Save, Youtube, Camera, Twitter, AlertTriangle } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -12,6 +12,7 @@ export default function CreatorProfile() {
   const [editData, setEditData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [dashboardStats, setDashboardStats] = useState({ tokenBalance: 0, campaignCount: 0 });
 
   const mapProfile = (p) => ({
     name: p.fullname || p.name || "—",
@@ -25,9 +26,8 @@ export default function CreatorProfile() {
     niches: p.niche ? [p.niche] : [],
     stats: {
       followers: p.followers || "0",
-      campaigns: 0,
-      rating: 0,
-      completionRate: "0%",
+      campaigns: 0, // will be overridden by dashboardStats
+      completionRate: "—",
     },
     social: {
       youtube: { url: p.youtube_url || "#", followers: "—", icon: <Youtube size={24} /> },
@@ -62,6 +62,17 @@ export default function CreatorProfile() {
         setError(msg);
       })
       .finally(() => setLoading(false));
+
+    // Fetch real stats
+    api.get("/creator/dashboard")
+      .then(res => {
+        const d = res.data;
+        setDashboardStats({
+          tokenBalance: d.token_balance || 0,
+          campaignCount: (d.stats?.total || 0),
+        });
+      })
+      .catch(() => { });
   }, []);
 
   const handleSaveProfile = () => {
@@ -167,8 +178,7 @@ export default function CreatorProfile() {
                 <div className="reveal delay-1 flex flex-wrap justify-center lg:justify-start gap-4">
                   {[
                     { label: "Followers", value: profile.stats.followers, icon: <Users size={16} /> },
-                    { label: "Campaigns", value: profile.stats.campaigns, icon: <Target size={16} /> },
-                    { label: "Rating", value: profile.stats.rating, icon: <Star size={16} /> },
+                    { label: "Applications", value: dashboardStats.campaignCount, icon: <Target size={16} /> },
                     { label: "Completion", value: profile.stats.completionRate, icon: <CheckCircle size={16} /> },
                   ].map((stat, i) => (
                     <div key={i} className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 px-4 py-3 text-center min-w-[90px]">
@@ -352,7 +362,6 @@ export default function CreatorProfile() {
                     { label: "Browse Campaigns", icon: <Search size={20} />, link: "/creator/campaigns", color: "from-blue-500 to-indigo-500" },
                     { label: "My Applications", icon: <FileText size={20} />, link: "/creator/applications", color: "from-purple-500 to-pink-500" },
                     { label: "Dashboard", icon: <BarChart3 size={20} />, link: "/creator/dashboard", color: "from-emerald-500 to-teal-500" },
-                    { label: "Settings", icon: <Settings size={20} />, link: "#", color: "from-gray-500 to-gray-600" },
                   ].map((action, i) => (
                     <Link
                       key={i}
@@ -397,7 +406,7 @@ export default function CreatorProfile() {
                   </div>
                   <div>
                     <p className="text-sm text-amber-600">Token Balance</p>
-                    <p className="text-2xl font-bold text-amber-800">45</p>
+                    <p className="text-2xl font-bold text-amber-800">{dashboardStats.tokenBalance}</p>
                   </div>
                 </div>
                 <button className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium hover:shadow-lg transition-all duration-300">

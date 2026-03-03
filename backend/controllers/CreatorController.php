@@ -129,6 +129,20 @@ class CreatorController
             return;
         }
 
+        // Guard: campaign must be active
+        if (($campaign['status'] ?? 'active') !== 'active') {
+            http_response_code(400);
+            echo json_encode(['error' => 'This campaign is no longer accepting applications.']);
+            return;
+        }
+
+        // Guard: deadline must not have passed
+        if (!empty($campaign['deadline']) && strtotime($campaign['deadline']) < strtotime('today')) {
+            http_response_code(400);
+            echo json_encode(['error' => 'The deadline for this campaign has passed.']);
+            return;
+        }
+
         $cost = (int)($campaign['token_cost'] ?? 2);
 
         // Deduct tokens
@@ -183,6 +197,126 @@ class CreatorController
         echo json_encode([
             'balance' => (int)$user['token_count'],
             'transactions' => $history,
+        ]);
+    }
+
+    /**
+     * GET /api/creator/application/{id}/contact
+     * Returns real sponsor contact info for an accepted application.
+     * Deducts 5 tokens on first view.
+     */
+    public static function viewContact(int $applicationId): void
+    {
+        $userId = $_SESSION['user_id'];
+        $db = getDB();
+
+        // Verify application belongs to this creator and is accepted
+        $stmt = $db->prepare(
+            "SELECT a.*, c.sponsor_id, c.title AS campaign_title
+             FROM applications a
+             JOIN campaigns c ON a.campaign_id = c.campaign_id
+             JOIN creator_profiles cp ON a.creator_id = cp.creator_id
+             WHERE a.application_id = :aid AND cp.user_id = :uid"
+        );
+        $stmt->execute(['aid' => $applicationId, 'uid' => $userId]);
+        $application = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$application) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Application not found.']);
+            return;
+        }
+
+        if ($application['status'] !== 'accepted') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Contact is only available for accepted applications.']);
+            return;
+        }
+
+        // Check if tokens were already deducted for this contact view
+        $desc = "Viewed contact for application #{$applicationId}";
+        $stmt = $db->prepare(
+            "SELECT transaction_id FROM token_transactions
+             WHERE user_id = :uid AND description = :desc"
+        );
+        $stmt->execute(['uid' => $userId, 'desc' => $desc]);
+        $alreadyViewed = (bool)$stmt->fetch();
+
+        if (!$alreadyViewed) {
+            $deducted = TokenTransaction::deductTokens($userId, 5, $desc);
+            if (!$deducted) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Insufficient tokens. You need 5 tokens to view contact info.']);
+                return;
+            }
+        }
+
+        // Fetch sponsor contact info
+        $stmt = $db->prepare(
+            "SELECT u.name, u.email, sp.company_name
+             FROM sponsor_profiles sp
+             JOIN users u ON sp.user_id = u.user_id
+             WHERE sp.sponsor_id = :sid"
+        );
+        $stmt->execute(['sid' => $application['sponsor_id']]);
+        $sponsor = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'contact' => [
+                'name' => $sponsor['name'] ?? '—',
+                'email' => $sponsor['email'] ?? '—',
+                'company' => $sponsor['company_name'] ?? '—',
+            ],
+            'tokens_deducted' => !$alreadyViewed ? 5 : 0,
+        ]);
+    }
+
+    /**
+     * POST /api/creator/invitation/{id}/respond
+     * Creator accepts or rejects an invitation.
+     * Body: { "action": "accepted" | "rejected" }
+     */
+    public static function respondToInvitation(int $applicationId): void
+    {
+        $userId = $_SESSION['user_id'];
+        $data = json_decode(file_get_contents('php://input'), true);
+        $action = $data['action'] ?? '';
+
+        if (!in_array($action, ['accepted', 'rejected'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid action. Must be "accepted" or "rejected".']);
+            return;
+        }
+
+        $db = getDB();
+
+        // Verify the application belongs to this creator and is an invitation
+        $stmt = $db->prepare(
+            "SELECT a.*
+             FROM applications a
+             JOIN creator_profiles cp ON a.creator_id = cp.creator_id
+             WHERE a.application_id = :aid AND cp.user_id = :uid"
+        );
+        $stmt->execute(['aid' => $applicationId, 'uid' => $userId]);
+        $application = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$application) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Invitation not found.']);
+            return;
+        }
+
+        if ($application['status'] !== 'invited') {
+            http_response_code(400);
+            echo json_encode(['error' => 'This is not a pending invitation.']);
+            return;
+        }
+
+        Application::updateStatus($applicationId, $action);
+
+        echo json_encode([
+            'message' => 'Invitation ' . $action . ' successfully.',
+            'status' => $action,
         ]);
     }
 }
