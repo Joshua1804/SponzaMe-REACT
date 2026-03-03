@@ -49,6 +49,26 @@ function handleAuthRoutes(string $method, string $action): void
             }
             break;
 
+        case 'verify-email':
+            if ($method === 'GET') {
+                AuthController::verifyEmail();
+            }
+            else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed.']);
+            }
+            break;
+
+        case 'resend-verification':
+            if ($method === 'POST') {
+                AuthController::resendVerification();
+            }
+            else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed.']);
+            }
+            break;
+
         default:
             http_response_code(404);
             echo json_encode(['error' => 'Route not found.']);

@@ -25,6 +25,12 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ── Email verification state ──
+  const [verificationPending, setVerificationPending] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
+  const [resendMsg, setResendMsg] = useState("");
+  const [resending, setResending] = useState(false);
+
   useEffect(() => {
     setIsSignUp(location.pathname === "/signup");
     setError("");
@@ -35,6 +41,21 @@ export default function AuthPage() {
     setIsSignUp(next);
     setError("");
     navigate(next ? "/signup" : "/login", { replace: true });
+  };
+
+  // ── Resend verification email ──
+  const handleResend = async () => {
+    if (!verificationEmail) return;
+    setResending(true);
+    setResendMsg("");
+    try {
+      const res = await api.post("/auth/resend-verification", { email: verificationEmail });
+      setResendMsg(res.data.message || "Verification email sent!");
+    } catch {
+      setResendMsg("Failed to resend. Please try again.");
+    } finally {
+      setResending(false);
+    }
   };
 
   // ── Login handler ──
@@ -55,7 +76,13 @@ export default function AuthPage() {
       else if (user.role === "admin") navigate("/admin/admindashboard");
       else navigate("/");
     } catch (err) {
-      setError(err.response?.data?.error || "Login failed. Please try again.");
+      const data = err.response?.data;
+      if (data?.needsVerification) {
+        setVerificationPending(true);
+        setVerificationEmail(data.email || loginEmail);
+        return;
+      }
+      setError(data?.error || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -84,10 +111,17 @@ export default function AuthPage() {
           role: signupRole,
         }
       );
+
+      if (res.data.needsVerification) {
+        setVerificationPending(true);
+        setVerificationEmail(signupEmail);
+        return;
+      }
+
+      // Fallback: if verification is somehow disabled
       const user = res.data.user;
-      // After signup → go to edit-profile page
-      if (user.role === "creator") navigate("/creator/profile?edit=1");
-      else if (user.role === "sponsor") navigate("/sponsor/profile?edit=1");
+      if (user?.role === "creator") navigate("/creator/profile?edit=1");
+      else if (user?.role === "sponsor") navigate("/sponsor/profile?edit=1");
       else navigate("/");
     } catch (err) {
       setError(err.response?.data?.error || "Signup failed. Please try again.");
@@ -95,6 +129,86 @@ export default function AuthPage() {
       setLoading(false);
     }
   };
+
+  // ── Verification Pending Screen ──
+  if (verificationPending) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#fafbff", display: "flex", flexDirection: "column" }}>
+        <Navbar />
+        <main style={{
+          flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "3rem 1rem", position: "relative", overflow: "hidden"
+        }}>
+          <div className="auth-blob auth-blob-1" />
+          <div className="auth-blob auth-blob-2" />
+
+          <div className="auth-card" style={{ maxWidth: 520, textAlign: "center", padding: "3rem 2.5rem" }}>
+            <div style={{ padding: "2rem 0" }}>
+              {/* Envelope icon */}
+              <div style={{
+                width: 72, height: 72, margin: "0 auto 1.5rem",
+                background: "linear-gradient(135deg, #5157a1, #393873)",
+                borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 8px 24px rgba(81, 87, 161, 0.3)"
+              }}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              </div>
+
+              <h2 style={{ color: "#393873", fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.5rem" }}>
+                Check Your Email
+              </h2>
+              <p style={{ color: "#7c7c9a", fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "0.5rem" }}>
+                We've sent a verification link to
+              </p>
+              <p style={{ color: "#393873", fontSize: "1rem", fontWeight: 700, marginBottom: "1.5rem" }}>
+                {verificationEmail}
+              </p>
+              <p style={{ color: "#7c7c9a", fontSize: "0.88rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                Click the link in the email to activate your account. The link expires in 24 hours.
+              </p>
+
+              {resendMsg && (
+                <div style={{
+                  background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#166534",
+                  padding: "0.65rem 1rem", borderRadius: "0.75rem", fontSize: "0.84rem",
+                  fontWeight: 500, marginBottom: "1rem"
+                }}>
+                  {resendMsg}
+                </div>
+              )}
+
+              <button
+                className="auth-submit"
+                onClick={handleResend}
+                disabled={resending}
+                style={{ maxWidth: 280, margin: "0 auto 0.75rem" }}
+              >
+                {resending ? "Sending…" : "Resend Verification Email"}
+              </button>
+
+              <p style={{ color: "#a5a5bd", fontSize: "0.82rem", marginTop: "1rem" }}>
+                Wrong email?{" "}
+                <button
+                  type="button"
+                  onClick={() => { setVerificationPending(false); setResendMsg(""); }}
+                  style={{
+                    background: "none", border: "none", color: "#5157a1",
+                    fontWeight: 700, cursor: "pointer", fontSize: "0.82rem"
+                  }}
+                >
+                  Go back
+                </button>
+              </p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#fafbff", display: "flex", flexDirection: "column" }}>
