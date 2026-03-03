@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Megaphone, Building2, Check, DollarSign, Target, Calendar, Users, FileText, CheckCircle, Smartphone, Youtube, Camera, Coins, Star, ClipboardList, PartyPopper, Package } from "lucide-react";
+import { Megaphone, Building2, Check, XCircle, DollarSign, Target, Calendar, Users, FileText, CheckCircle, Smartphone, Youtube, Camera, Coins, Star, ClipboardList, PartyPopper, Package } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -13,6 +13,11 @@ export default function CampaignDetails() {
   const [applyMessage, setApplyMessage] = useState("");
   const [hasApplied, setHasApplied] = useState(false);
   const [tokenBalance, setTokenBalance] = useState(0);
+
+  const isCampaignClosed = campaign && (
+    campaign.status !== "active" ||
+    (campaign.deadline && campaign.deadline !== "—" && new Date(campaign.deadline) < new Date())
+  );
 
   // Fetch real token balance
   useEffect(() => {
@@ -38,6 +43,8 @@ export default function CampaignDetails() {
           requirements: c.requirements ? c.requirements.split("\n").filter(Boolean) : [],
           deliverables: c.deliverables ? c.deliverables.split("\n").filter(Boolean) : [],
           sponsorCampaignCount: c.sponsor_campaign_count || 0,
+          status: c.status || "active",
+          industry: c.industry || null,
           icon: <Megaphone size={28} />,
         });
         setHasApplied(!!c.has_applied);
@@ -121,9 +128,15 @@ export default function CampaignDetails() {
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="px-4 py-2 rounded-full bg-green-500/20 text-green-300 text-sm font-medium border border-green-500/30">
-                  <Check size={14} className="inline" /> Open for Applications
-                </span>
+                {campaign.status === "active" && (!campaign.deadline || campaign.deadline === "—" || new Date(campaign.deadline) >= new Date()) ? (
+                  <span className="px-4 py-2 rounded-full bg-green-500/20 text-green-300 text-sm font-medium border border-green-500/30">
+                    <Check size={14} className="inline" /> Open for Applications
+                  </span>
+                ) : (
+                  <span className="px-4 py-2 rounded-full bg-red-500/20 text-red-300 text-sm font-medium border border-red-500/30">
+                    <XCircle size={14} className="inline" /> Closed
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -251,14 +264,16 @@ export default function CampaignDetails() {
                 </div>
 
                 <button
-                  onClick={() => !hasApplied && setIsApplying(true)}
-                  disabled={hasApplied}
+                  onClick={() => !hasApplied && !isCampaignClosed && setIsApplying(true)}
+                  disabled={hasApplied || isCampaignClosed}
                   className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 ${hasApplied
                     ? "bg-green-100 text-green-700 cursor-not-allowed border border-green-200"
-                    : "bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:shadow-[#5157a1]/25 hover:scale-[1.02] active:scale-[0.98]"
+                    : isCampaignClosed
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                      : "bg-gradient-to-r from-[#5157a1] to-[#393873] text-white hover:shadow-lg hover:shadow-[#5157a1]/25 hover:scale-[1.02] active:scale-[0.98]"
                     }`}
                 >
-                  {hasApplied ? "✓ Already Applied" : "Apply for Campaign"}
+                  {hasApplied ? "✓ Already Applied" : isCampaignClosed ? "Campaign Closed" : "Apply for Campaign"}
                 </button>
 
                 {applyMessage && (
@@ -283,18 +298,12 @@ export default function CampaignDetails() {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">{campaign.sponsor}</p>
-                    <p className="text-sm text-gray-500">Technology Company</p>
+                    <p className="text-sm text-gray-500">{campaign.niche}</p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Star size={14} className="inline" /> 4.8 Rating
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
                     <ClipboardList size={14} className="inline" /> {campaign.sponsorCampaignCount} Campaigns Posted
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <CheckCircle size={14} className="inline" /> Verified Sponsor
                   </div>
                 </div>
               </div>

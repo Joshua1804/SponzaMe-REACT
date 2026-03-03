@@ -79,7 +79,7 @@ class Application
     {
         $db = getDB();
         $stmt = $db->prepare(
-            "SELECT a.*, u.name AS creator_name, cp.followers, cp.platforms, cp.niche
+            "SELECT a.*, u.name AS creator_name, u.user_id AS creator_user_id, cp.followers, cp.platforms, cp.niche
              FROM applications a
              JOIN creator_profiles cp ON a.creator_id = cp.creator_id
              JOIN users u ON cp.user_id = u.user_id
@@ -111,7 +111,8 @@ class Application
                 COUNT(*) AS total,
                 SUM(CASE WHEN a.status = 'pending' THEN 1 ELSE 0 END) AS pending,
                 SUM(CASE WHEN a.status = 'accepted' THEN 1 ELSE 0 END) AS accepted,
-                SUM(CASE WHEN a.status = 'rejected' THEN 1 ELSE 0 END) AS rejected
+                SUM(CASE WHEN a.status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
+                SUM(CASE WHEN a.status = 'invited' THEN 1 ELSE 0 END) AS invited
              FROM applications a
              JOIN creator_profiles cp ON a.creator_id = cp.creator_id
              WHERE cp.user_id = :uid"

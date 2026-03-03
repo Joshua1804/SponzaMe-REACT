@@ -7,6 +7,10 @@ import api from "../../api";
 
 export default function BrowseCampaigns() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [nicheFilter, setNicheFilter] = useState("All");
+  const [budgetFilter, setBudgetFilter] = useState("All Budgets");
+  const [sortOption, setSortOption] = useState("Most Recent");
+  const [visibleCount, setVisibleCount] = useState(9);
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,6 +22,7 @@ export default function BrowseCampaigns() {
           title: c.title,
           sponsor: c.sponsor_name || c.company_name || "—",
           budget: c.budget ? `₹${Number(c.budget).toLocaleString()}` : "—",
+          rawBudget: c.budget ? Number(c.budget) : 0,
           desc: c.description || "",
           link: `/creator/campaign/${c.campaign_id}`,
           icon: <Megaphone size={24} />,
@@ -49,6 +54,45 @@ export default function BrowseCampaigns() {
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [campaigns]);
+
+  // Client-side filtering
+  const filteredCampaigns = campaigns.filter(c => {
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = c.title.toLowerCase().includes(q)
+        || c.sponsor.toLowerCase().includes(q)
+        || c.desc.toLowerCase().includes(q)
+        || c.tags.some(t => t.toLowerCase().includes(q));
+      if (!matchesSearch) return false;
+    }
+    // Niche filter
+    if (nicheFilter && nicheFilter !== "All") {
+      if (!c.tags.some(t => t.toLowerCase() === nicheFilter.toLowerCase())) return false;
+    }
+    // Budget filter
+    if (budgetFilter && budgetFilter !== "All Budgets") {
+      const raw = c.rawBudget || 0;
+      if (budgetFilter === "Below ₹10,000" && raw >= 10000) return false;
+      if (budgetFilter === "₹10,000 – ₹25,000" && (raw < 10000 || raw > 25000)) return false;
+      if (budgetFilter === "₹25,000 – ₹50,000" && (raw < 25000 || raw > 50000)) return false;
+      if (budgetFilter === "Above ₹50,000" && raw <= 50000) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  const sortedCampaigns = [...filteredCampaigns].sort((a, b) => {
+    if (sortOption === "Highest Budget") return (b.rawBudget || 0) - (a.rawBudget || 0);
+    if (sortOption === "Deadline") {
+      const da = a.deadline === "—" ? Infinity : new Date(a.deadline).getTime();
+      const db = b.deadline === "—" ? Infinity : new Date(b.deadline).getTime();
+      return da - db;
+    }
+    return 0; // Most Recent = default order from API
+  });
+
+  const visibleCampaigns = sortedCampaigns.slice(0, visibleCount);
 
   return (
     <div className="pt-16 bg-gray-50 min-h-screen">
@@ -103,8 +147,12 @@ export default function BrowseCampaigns() {
 
               {/* Niche Filter */}
               <div className="relative">
-                <select className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/20 focus:border-[#5157a1] transition-all cursor-pointer">
-                  <option>All Niches</option>
+                <select
+                  value={nicheFilter}
+                  onChange={(e) => setNicheFilter(e.target.value)}
+                  className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/20 focus:border-[#5157a1] transition-all cursor-pointer"
+                >
+                  <option>All</option>
                   <option>Technology</option>
                   <option>Gaming</option>
                   <option>Fashion</option>
@@ -121,7 +169,11 @@ export default function BrowseCampaigns() {
 
               {/* Budget Filter */}
               <div className="relative">
-                <select className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/20 focus:border-[#5157a1] transition-all cursor-pointer">
+                <select
+                  value={budgetFilter}
+                  onChange={(e) => setBudgetFilter(e.target.value)}
+                  className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#5157a1]/20 focus:border-[#5157a1] transition-all cursor-pointer"
+                >
                   <option>All Budgets</option>
                   <option>Below ₹10,000</option>
                   <option>₹10,000 – ₹25,000</option>
@@ -141,7 +193,8 @@ export default function BrowseCampaigns() {
               {["All", "Technology", "Gaming", "Fashion", "Fitness", "Food", "Travel"].map((tag, i) => (
                 <button
                   key={i}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${i === 0
+                  onClick={() => setNicheFilter(tag)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${nicheFilter === tag
                     ? "bg-[#5157a1] text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-[#5157a1]/10 hover:text-[#5157a1]"
                     }`}
@@ -158,11 +211,15 @@ export default function BrowseCampaigns() {
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <p className="text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{campaigns.length}</span> campaigns
+            Showing <span className="font-semibold text-gray-900">{sortedCampaigns.length}</span> campaigns
           </p>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Sort by:</span>
-            <select className="text-sm font-medium text-[#5157a1] bg-transparent focus:outline-none cursor-pointer">
+            <select
+              value={sortOption}
+              onChange={(e) => { setSortOption(e.target.value); setVisibleCount(9); }}
+              className="text-sm font-medium text-[#5157a1] bg-transparent focus:outline-none cursor-pointer"
+            >
               <option>Most Recent</option>
               <option>Highest Budget</option>
               <option>Deadline</option>
@@ -175,7 +232,7 @@ export default function BrowseCampaigns() {
       <div className="w-full px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {campaigns.map((campaign, i) => (
+            {visibleCampaigns.map((campaign, i) => (
               <div
                 key={i}
                 className={`reveal delay-${(i % 3) + 1} group bg-white rounded-3xl border border-gray-100
@@ -239,11 +296,16 @@ export default function BrowseCampaigns() {
           </div>
 
           {/* Load More */}
-          <div className="mt-12 text-center">
-            <button className="px-8 py-4 rounded-xl border-2 border-[#5157a1] text-[#5157a1] font-semibold transition-all duration-300 hover:bg-[#5157a1] hover:text-white">
-              Load More Campaigns
-            </button>
-          </div>
+          {visibleCount < sortedCampaigns.length && (
+            <div className="mt-12 text-center">
+              <button
+                onClick={() => setVisibleCount(prev => prev + 9)}
+                className="px-8 py-4 rounded-xl border-2 border-[#5157a1] text-[#5157a1] font-semibold transition-all duration-300 hover:bg-[#5157a1] hover:text-white"
+              >
+                Load More Campaigns
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
