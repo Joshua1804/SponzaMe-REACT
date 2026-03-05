@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
-import { Sprout, Star, Crown, Coins, Package, CreditCard, Smartphone, Landmark, Lock, ShieldCheck, MessageCircle, Check } from "lucide-react";
+import { Sprout, Star, Crown, Coins, Package, CreditCard, Smartphone, Landmark, Lock, ShieldCheck, MessageCircle, Check, Wallet, AlertTriangle, CheckCircle } from "lucide-react";
 
 // Load Razorpay checkout script
 function loadRazorpayScript() {
@@ -37,7 +37,7 @@ export default function TokenCheckout() {
       originalPrice: null,
       perToken: "₹4.99",
       color: "from-blue-500 to-indigo-500",
-      icon: "🌱",
+      icon: <Sprout size={24} />,
     },
     {
       id: "value",
@@ -48,7 +48,7 @@ export default function TokenCheckout() {
       perToken: "₹3.43",
       popular: true,
       color: "from-purple-500 to-pink-500",
-      icon: "⭐",
+      icon: <Star size={24} />,
     },
     {
       id: "premium",
@@ -58,7 +58,7 @@ export default function TokenCheckout() {
       originalPrice: null,
       perToken: "₹3.00",
       color: "from-amber-500 to-orange-500",
-      icon: "👑",
+      icon: <Crown size={24} />,
     },
   ];
 
@@ -135,7 +135,7 @@ export default function TokenCheckout() {
           } catch (verifyErr) {
             setError(
               verifyErr.response?.data?.error ||
-                "Payment verification failed. If money was deducted, it will be refunded.",
+              "Payment verification failed. If money was deducted, it will be refunded.",
             );
           }
           setIsProcessing(false);
@@ -162,7 +162,7 @@ export default function TokenCheckout() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Failed to initiate payment. Please try again.",
+        "Failed to initiate payment. Please try again.",
       );
       setIsProcessing(false);
     }
@@ -176,7 +176,7 @@ export default function TokenCheckout() {
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-md w-full text-center">
             {/* Success Animation */}
             <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center animate-bounce">
-              <span className="text-4xl">✓</span>
+              <CheckCircle size={40} className="text-white" />
             </div>
 
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -189,7 +189,7 @@ export default function TokenCheckout() {
             {/* Token Summary */}
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-8">
               <div className="flex items-center justify-center gap-3 mb-2">
-                <span className="text-4xl">🪙</span>
+                <Coins size={36} className="text-amber-600" />
                 <span className="text-4xl font-bold text-amber-600">
                   +{paymentResult?.tokens_added || selectedPlan.tokens}
                 </span>
@@ -220,7 +220,7 @@ export default function TokenCheckout() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">New Balance</span>
                 <span className="font-bold text-emerald-600">
-                  {paymentResult?.new_balance} 🪙
+                  {paymentResult?.new_balance} <Coins size={16} className="inline text-amber-500" />
                 </span>
               </div>
             </div>
@@ -298,7 +298,7 @@ export default function TokenCheckout() {
               <div className="reveal bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                    📦
+                    <Package size={16} className="text-[#5157a1]" />
                   </span>
                   Select Plan
                 </h2>
@@ -308,20 +308,19 @@ export default function TokenCheckout() {
                     <button
                       key={plan.id}
                       onClick={() => setSelectedPlan(plan)}
-                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 text-center ${
-                        selectedPlan?.id === plan.id
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 text-center ${selectedPlan?.id === plan.id
                           ? "border-[#5157a1] bg-[#5157a1]/5 shadow-lg"
                           : "border-gray-200 hover:border-gray-300"
-                      }`}
+                        }`}
                     >
                       {plan.popular && (
                         <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#e7bdd3] text-[#393873] text-xs rounded-full font-semibold whitespace-nowrap">
                           Popular
                         </span>
                       )}
-                      <div className="text-2xl mb-1">{plan.icon}</div>
+                      <div className="mb-1 flex items-center justify-center">{plan.icon}</div>
                       <p className="font-semibold text-gray-900">{plan.name}</p>
-                      <p className="text-sm text-gray-500">{plan.tokens} 🪙</p>
+                      <p className="text-sm text-gray-500 flex items-center justify-center gap-1">{plan.tokens} <Coins size={14} className="text-amber-500" /></p>
                       <p className="font-bold text-[#5157a1] mt-1">
                         ₹{plan.price}
                       </p>
@@ -334,7 +333,7 @@ export default function TokenCheckout() {
               <div className="reveal delay-1 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5157a1]/10 to-[#e7bdd3]/10 flex items-center justify-center">
-                    💳
+                    <CreditCard size={16} className="text-[#5157a1]" />
                   </span>
                   Payment
                 </h2>
@@ -369,13 +368,18 @@ export default function TokenCheckout() {
 
                 {/* Payment Method Icons */}
                 <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
-                  {["💳 Cards", "📱 UPI", "🏦 Net Banking", "👛 Wallets"].map(
+                  {[
+                    { icon: <CreditCard size={14} />, label: "Cards" },
+                    { icon: <Smartphone size={14} />, label: "UPI" },
+                    { icon: <Landmark size={14} />, label: "Net Banking" },
+                    { icon: <Wallet size={14} />, label: "Wallets" },
+                  ].map(
                     (method) => (
                       <span
-                        key={method}
-                        className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium"
+                        key={method.label}
+                        className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium flex items-center gap-1.5"
                       >
-                        {method}
+                        {method.icon} {method.label}
                       </span>
                     ),
                   )}
@@ -384,7 +388,7 @@ export default function TokenCheckout() {
                 {/* Error Message */}
                 {error && (
                   <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
-                    <span className="text-lg">⚠️</span>
+                    <AlertTriangle size={20} className="text-red-500 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-red-800">
                         {error}
@@ -401,7 +405,7 @@ export default function TokenCheckout() {
 
                 {/* Security Notice */}
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 mb-6">
-                  <span className="text-lg">🔒</span>
+                  <Lock size={20} className="text-emerald-600 flex-shrink-0" />
                   <p className="text-sm text-emerald-700">
                     Your payment is secured with 256-bit SSL encryption by
                     Razorpay
@@ -412,11 +416,10 @@ export default function TokenCheckout() {
                 <button
                   onClick={handlePayment}
                   disabled={isProcessing}
-                  className={`w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${
-                    isProcessing
+                  className={`w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${isProcessing
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-gradient-to-r from-[#5157a1] to-[#393873] hover:shadow-xl hover:shadow-[#5157a1]/25 transform hover:-translate-y-0.5"
-                  }`}
+                    }`}
                 >
                   {isProcessing ? (
                     <>
@@ -425,7 +428,7 @@ export default function TokenCheckout() {
                     </>
                   ) : (
                     <>
-                      <span>🔐</span>
+                      <ShieldCheck size={20} />
                       Pay ₹{selectedPlan.price} with Razorpay
                     </>
                   )}
@@ -447,7 +450,7 @@ export default function TokenCheckout() {
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-3xl">{selectedPlan.icon}</span>
+                      <span className="text-white">{selectedPlan.icon}</span>
                       <div>
                         <p className="font-bold text-lg">
                           {selectedPlan.name} Plan
@@ -459,7 +462,7 @@ export default function TokenCheckout() {
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 py-3 bg-white/20 rounded-lg">
-                    <span className="text-3xl">🪙</span>
+                    <Coins size={28} className="text-white" />
                     <span className="text-3xl font-bold">
                       {selectedPlan.tokens}
                     </span>
@@ -511,7 +514,7 @@ export default function TokenCheckout() {
                         key={i}
                         className="flex items-center gap-2 text-sm text-gray-600"
                       >
-                        <span className="text-emerald-500">✓</span>
+                        <Check size={16} className="text-emerald-500" />
                         {benefit}
                       </li>
                     ))}
@@ -522,8 +525,8 @@ export default function TokenCheckout() {
               {/* Support */}
               <div className="reveal delay-3 bg-[#5157a1]/5 rounded-2xl p-5 border border-[#5157a1]/10">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-xl shadow-sm">
-                    💬
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                    <MessageCircle size={20} className="text-[#5157a1]" />
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">Need Help?</p>

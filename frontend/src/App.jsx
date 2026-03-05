@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import AppRoutes from "./routes"
 import SplashScreen from "./components/SplashScreen"
+import Chatbot from "./components/Chatbot"
 
 function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -9,7 +10,7 @@ function App() {
   useEffect(() => {
     // Check if this is the initial page load (not a navigation)
     const hasSeenSplash = sessionStorage.getItem("splashShown")
-    
+
     if (hasSeenSplash) {
       setShowSplash(false)
       setIsFirstLoad(false)
@@ -26,7 +27,7 @@ function App() {
       {showSplash && isFirstLoad && (
         <SplashScreen onComplete={handleSplashComplete} />
       )}
-      <div 
+      <div
         className={`
           transition-opacity duration-500
           ${showSplash && isFirstLoad ? "opacity-0" : "opacity-100"}
@@ -34,6 +35,7 @@ function App() {
       >
         <AppRoutes />
       </div>
+      <Chatbot />
     </>
   )
 }
