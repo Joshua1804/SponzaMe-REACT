@@ -3,6 +3,7 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Campaign.php';
 require_once __DIR__ . '/../models/Application.php';
 require_once __DIR__ . '/../models/TokenTransaction.php';
+require_once __DIR__ . '/../helpers/Mailer.php';
 
 class CreatorController
 {
@@ -158,6 +159,34 @@ class CreatorController
             'application' => $app,
             'tokens_spent' => $cost,
         ]);
+
+        // Send email notification to the sponsor (non-blocking: don't fail if email fails)
+        try {
+            $db = getDB();
+            $user = User::findById($userId);
+            $creatorName = $user['name'] ?? 'A creator';
+
+            // Get sponsor's email via sponsor_id -> user_id -> users table
+            $stmt = $db->prepare(
+                "SELECT u.email, u.name FROM users u
+                 JOIN sponsor_profiles sp ON sp.user_id = u.user_id
+                 WHERE sp.sponsor_id = :sid"
+            );
+            $stmt->execute(['sid' => $campaign['sponsor_id']]);
+            $sponsor = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($sponsor && !empty($sponsor['email'])) {
+                Mailer::notifyApplicationReceived(
+                    $sponsor['email'],
+                    $sponsor['name'] ?? 'Sponsor',
+                    $creatorName,
+                    $campaign['title']
+                );
+            }
+        }
+        catch (\Exception $e) {
+            error_log('Email notification failed: ' . $e->getMessage());
+        }
     }
 
     /**
