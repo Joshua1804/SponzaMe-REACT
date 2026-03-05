@@ -368,7 +368,7 @@ export default function ManageCampaigns() {
                         )}
                         {campaign.budget && (
                           <span className="flex items-center gap-1">
-                            <DollarSign size={14} className="inline" /> ₹
+                            ₹
                             {Number(campaign.budget).toLocaleString()}
                           </span>
                         )}

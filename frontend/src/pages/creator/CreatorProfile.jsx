@@ -409,9 +409,9 @@ export default function CreatorProfile() {
                     <p className="text-2xl font-bold text-amber-800">{dashboardStats.tokenBalance}</p>
                   </div>
                 </div>
-                <button className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium hover:shadow-lg transition-all duration-300">
+                <Link to="/user/shop" className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium text-center hover:shadow-lg transition-all duration-300">
                   Buy More Tokens
-                </button>
+                </Link>
               </div>
 
               {/* Profile Completion */}
