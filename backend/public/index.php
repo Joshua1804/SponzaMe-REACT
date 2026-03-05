@@ -82,6 +82,13 @@ if (preg_match('#^/api/tokens/([\w-]+)$#', $uri, $matches)) {
     exit;
 }
 
+// Route: /api/chat
+if ($uri === '/api/chat') {
+    require_once __DIR__ . '/../routes/chat.php';
+    handleChatRoutes($method);
+    exit;
+}
+
 // Fallback
 http_response_code(404);
 echo json_encode(['error' => 'Endpoint not found.']);
