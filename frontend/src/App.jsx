@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import AppRoutes from "./routes"
 import SplashScreen from "./components/SplashScreen"
-import Chatbot from "./components/Chatbot"
 
 function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -35,7 +34,6 @@ function App() {
       >
         <AppRoutes />
       </div>
-      <Chatbot />
     </>
   )
 }
