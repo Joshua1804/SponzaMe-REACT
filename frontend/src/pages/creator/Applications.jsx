@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Megaphone, Clock, CheckCircle, XCircle, ClipboardList, Eye, Coins, Search, Mail, Phone, User, MessageCircle, Inbox, X } from "lucide-react";
+import { Megaphone, Clock, CheckCircle, XCircle, ClipboardList, Eye, Coins, Search, Mail, User, MessageCircle, Inbox, X, Send, Check } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import api from "../../api";
@@ -9,6 +9,9 @@ export default function Applications() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [showContactModal, setShowContactModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [contactData, setContactData] = useState(null);
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactError, setContactError] = useState("");
 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +44,7 @@ export default function Applications() {
     pending: applications.filter(a => a.status === "pending").length,
     accepted: applications.filter(a => a.status === "accepted").length,
     rejected: applications.filter(a => a.status === "rejected").length,
+    invited: applications.filter(a => a.status === "invited").length,
   };
 
   // Scroll reveal animation
@@ -65,7 +69,31 @@ export default function Applications() {
 
   const handleViewContact = (application) => {
     setSelectedApplication(application);
+    setContactData(null);
+    setContactError("");
+    setContactLoading(true);
     setShowContactModal(true);
+
+    api.get(`/creator/application/${application.id}/contact`)
+      .then(res => {
+        setContactData(res.data.contact);
+      })
+      .catch(err => {
+        setContactError(err.response?.data?.error || "Failed to load contact info.");
+      })
+      .finally(() => setContactLoading(false));
+  };
+
+  const handleRespondToInvitation = (applicationId, action) => {
+    api.post(`/creator/invitation/${applicationId}/respond`, { action })
+      .then(() => {
+        setApplications(prev =>
+          prev.map(a => a.id === applicationId ? { ...a, status: action } : a)
+        );
+      })
+      .catch(err => {
+        alert(err.response?.data?.error || "Failed to respond to invitation.");
+      });
   };
 
   const getStatusConfig = (status) => {
@@ -94,6 +122,14 @@ export default function Applications() {
           icon: <XCircle size={16} />,
           label: "Rejected",
         };
+      case "invited":
+        return {
+          bg: "bg-blue-50",
+          text: "text-blue-600",
+          border: "border-blue-200",
+          icon: <Send size={16} />,
+          label: "Invited",
+        };
       default:
         return {
           bg: "bg-gray-50",
@@ -103,6 +139,88 @@ export default function Applications() {
           label: status,
         };
     }
+  };
+
+  const renderActionButton = (app) => {
+    if (app.status === "accepted") {
+      return (
+        <button
+          onClick={() => handleViewContact(app)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#5157a1] to-[#393873] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#5157a1]/25 transition-all duration-300 transform hover:-translate-y-0.5"
+        >
+          <Eye size={16} />
+          View Contact
+          <span className="text-xs opacity-75 flex items-center gap-1">(<Coins size={12} />5)</span>
+        </button>
+      );
+    }
+    if (app.status === "invited") {
+      return (
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleRespondToInvitation(app.id, "accepted")}
+            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-all"
+          >
+            <Check size={14} /> Accept
+          </button>
+          <button
+            onClick={() => handleRespondToInvitation(app.id, "rejected")}
+            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-all"
+          >
+            <X size={14} /> Decline
+          </button>
+        </div>
+      );
+    }
+    return (
+      <span className="text-gray-400 text-sm flex items-center gap-1">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        Contact Locked
+      </span>
+    );
+  };
+
+  const renderMobileAction = (app) => {
+    if (app.status === "accepted") {
+      return (
+        <button
+          onClick={() => handleViewContact(app)}
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
+        >
+          <Eye size={16} />
+          View Contact
+          <span className="text-sm opacity-75 flex items-center gap-1">(<Coins size={12} />5)</span>
+        </button>
+      );
+    }
+    if (app.status === "invited") {
+      return (
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleRespondToInvitation(app.id, "accepted")}
+            className="flex-1 py-3 rounded-xl bg-emerald-500 text-white font-medium hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
+          >
+            <Check size={16} /> Accept
+          </button>
+          <button
+            onClick={() => handleRespondToInvitation(app.id, "rejected")}
+            className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-all flex items-center justify-center gap-2"
+          >
+            <X size={16} /> Decline
+          </button>
+        </div>
+      );
+    }
+    return (
+      <div className="w-full py-3 rounded-xl bg-gray-100 text-gray-400 font-medium text-center flex items-center justify-center gap-2">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        Contact Locked
+      </div>
+    );
   };
 
   return (
@@ -142,6 +260,7 @@ export default function Applications() {
               <div className="reveal delay-1 flex gap-3">
                 {[
                   { label: "Total", value: stats.total, color: "from-blue-400 to-indigo-500" },
+                  { label: "Invited", value: stats.invited, color: "from-blue-400 to-cyan-500" },
                   { label: "Pending", value: stats.pending, color: "from-amber-400 to-orange-500" },
                   { label: "Accepted", value: stats.accepted, color: "from-emerald-400 to-green-500" },
                 ].map((stat, i) => (
@@ -167,6 +286,7 @@ export default function Applications() {
               <div className="flex gap-2">
                 {[
                   { key: "all", label: "All Applications", icon: <ClipboardList size={16} /> },
+                  { key: "invited", label: "Invited", icon: <Send size={16} /> },
                   { key: "pending", label: "Pending", icon: <Clock size={16} /> },
                   { key: "accepted", label: "Accepted", icon: <CheckCircle size={16} /> },
                   { key: "rejected", label: "Rejected", icon: <XCircle size={16} /> },
@@ -252,23 +372,7 @@ export default function Applications() {
                       </td>
                       {/* Action */}
                       <td className="py-4 px-6">
-                        {app.status === "accepted" ? (
-                          <button
-                            onClick={() => handleViewContact(app)}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#5157a1] to-[#393873] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#5157a1]/25 transition-all duration-300 transform hover:-translate-y-0.5"
-                          >
-                            <Eye size={16} />
-                            View Contact
-                            <span className="text-xs opacity-75 flex items-center gap-1">(<Coins size={12} />5)</span>
-                          </button>
-                        ) : (
-                          <span className="text-gray-400 text-sm flex items-center gap-1">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                            Contact Locked
-                          </span>
-                        )}
+                        {renderActionButton(app)}
                       </td>
                     </tr>
                   );
@@ -321,23 +425,7 @@ export default function Applications() {
                     ))}
                   </div>
 
-                  {app.status === "accepted" ? (
-                    <button
-                      onClick={() => handleViewContact(app)}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                    >
-                      <Eye size={16} />
-                      View Contact
-                      <span className="text-sm opacity-75 flex items-center gap-1">(<Coins size={12} />5)</span>
-                    </button>
-                  ) : (
-                    <div className="w-full py-3 rounded-xl bg-gray-100 text-gray-400 font-medium text-center flex items-center justify-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Contact Locked
-                    </div>
-                  )}
+                  {renderMobileAction(app)}
                 </div>
               );
             })}
@@ -352,7 +440,7 @@ export default function Applications() {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No applications found</h3>
               <p className="text-gray-500 mb-6">You don't have any {activeFilter !== "all" ? activeFilter : ""} applications yet.</p>
               <Link
-                to="/creator/browse"
+                to="/creator/campaigns"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all"
               >
                 <Search size={16} />
@@ -394,44 +482,56 @@ export default function Applications() {
             </div>
 
             {/* Contact Info */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-                  <Mail size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Email</p>
-                  <p className="font-medium text-gray-900">contact@{selectedApplication.sponsor.toLowerCase().replace(/\s/g, "")}.com</p>
-                </div>
+            {contactLoading ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Loading contact info...</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-                  <Phone size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Phone</p>
-                  <p className="font-medium text-gray-900">+91 98765 43210</p>
-                </div>
+            ) : contactError ? (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                <p className="text-red-600 text-sm">{contactError}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-                  <User size={20} />
+            ) : contactData ? (
+              <>
+                <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
+                      <User size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Contact Person</p>
+                      <p className="font-medium text-gray-900">{contactData.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
+                      <Mail size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Email</p>
+                      <p className="font-medium text-gray-900">{contactData.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
+                      <Megaphone size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Company</p>
+                      <p className="font-medium text-gray-900">{contactData.company}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500">Contact Person</p>
-                  <p className="font-medium text-gray-900">Rahul Sharma (Marketing Manager)</p>
-                </div>
-              </div>
-            </div>
 
-            {/* Token Deduction Notice */}
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
-              <Coins size={20} />
-              <div>
-                <p className="font-medium text-amber-800 text-sm">5 Tokens Deducted</p>
-                <p className="text-amber-600 text-xs">This contact information has been unlocked.</p>
-              </div>
-            </div>
+                {/* Token Deduction Notice */}
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                  <Coins size={20} />
+                  <div>
+                    <p className="font-medium text-amber-800 text-sm">Contact Unlocked</p>
+                    <p className="text-amber-600 text-xs">This contact information has been unlocked.</p>
+                  </div>
+                </div>
+              </>
+            ) : null}
 
             {/* Actions */}
             <div className="flex gap-3">
@@ -441,7 +541,10 @@ export default function Applications() {
               >
                 Close
               </button>
-              <button className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2">
+              <button
+                onClick={() => alert("Messaging module coming soon!")}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#5157a1] to-[#393873] text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              >
                 <MessageCircle size={16} />
                 Start Chat
               </button>

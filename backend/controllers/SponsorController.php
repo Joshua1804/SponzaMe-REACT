@@ -191,6 +191,15 @@ class SponsorController
         }
 
         Application::updateStatus($appId, $status);
+
+        // Auto-close the campaign when an applicant is accepted
+        if ($status === 'accepted') {
+            $application = Application::findById($appId);
+            if ($application && !empty($application['campaign_id'])) {
+                Campaign::updateStatus((int)$application['campaign_id'], 'closed');
+            }
+        }
+
         echo json_encode(['message' => "Application $status."]);
     }
 

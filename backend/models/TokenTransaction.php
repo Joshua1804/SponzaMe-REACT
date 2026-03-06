@@ -51,11 +51,11 @@ class TokenTransaction
     /**
      * Purchase tokens: update user balance + log transaction.
      */
-    public static function purchaseTokens(int $userId, string $plan): array
+    public static function purchaseTokens(int $userId, string $plan, ?string $razorpayPaymentId = null, ?string $razorpayOrderId = null): array
     {
         $plans = [
-            'basic' => ['tokens' => 200, 'price' => 999],
-            'value' => ['tokens' => 350, 'price' => 1200],
+            'basic'   => ['tokens' => 200, 'price' => 999],
+            'value'   => ['tokens' => 350, 'price' => 1200],
             'premium' => ['tokens' => 500, 'price' => 1500],
         ];
 
@@ -74,15 +74,24 @@ class TokenTransaction
             $stmt = $db->prepare("UPDATE users SET token_count = token_count + :tokens WHERE user_id = :uid");
             $stmt->execute(['tokens' => $tokens, 'uid' => $userId]);
 
+            // Build description with Razorpay details
+            $description = "Purchased $plan plan (₹$price)";
+            if ($razorpayPaymentId) {
+                $description .= " | Payment: $razorpayPaymentId";
+            }
+            if ($razorpayOrderId) {
+                $description .= " | Order: $razorpayOrderId";
+            }
+
             // Log transaction
             $stmt = $db->prepare(
                 "INSERT INTO token_transactions (user_id, type, amount, description)
                  VALUES (:uid, 'purchased', :amount, :desc)"
             );
             $stmt->execute([
-                'uid' => $userId,
+                'uid'    => $userId,
                 'amount' => $tokens,
-                'desc' => "Purchased $plan plan (₹$price)",
+                'desc'   => $description,
             ]);
 
             $db->commit();
@@ -94,9 +103,9 @@ class TokenTransaction
 
             return [
                 'tokens_added' => $tokens,
-                'new_balance' => $balance,
-                'plan' => $plan,
-                'price' => $price,
+                'new_balance'  => $balance,
+                'plan'         => $plan,
+                'price'        => $price,
             ];
         }
         catch (\Exception $e) {

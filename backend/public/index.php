@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 
+// Load Composer autoloader (for PHPMailer etc.)
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
+
 // ── CORS ──
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: ' . CORS_ORIGIN);
@@ -32,8 +37,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 // Strip trailing slash
 $uri = rtrim($uri, '/');
 
-// Route: /api/auth/{action}
-if (preg_match('#^/api/auth/(\w+)$#', $uri, $matches)) {
+// Route: /api/auth/{action} (allow hyphens in action name)
+if (preg_match('#^/api/auth/([\w-]+)$#', $uri, $matches)) {
     require_once __DIR__ . '/../routes/auth.php';
     handleAuthRoutes($method, $matches[1]);
     exit;
@@ -71,7 +76,7 @@ if (preg_match('#^/api/admin/(\w+)$#', $uri, $matches)) {
 }
 
 // Route: /api/tokens/{action}
-if (preg_match('#^/api/tokens/(\w+)$#', $uri, $matches)) {
+if (preg_match('#^/api/tokens/([\w-]+)$#', $uri, $matches)) {
     require_once __DIR__ . '/../routes/tokens.php';
     handleTokenRoutes($method, $matches[1]);
     exit;

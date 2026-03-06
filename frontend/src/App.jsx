@@ -9,7 +9,7 @@ function App() {
   useEffect(() => {
     // Check if this is the initial page load (not a navigation)
     const hasSeenSplash = sessionStorage.getItem("splashShown")
-    
+
     if (hasSeenSplash) {
       setShowSplash(false)
       setIsFirstLoad(false)
@@ -26,7 +26,7 @@ function App() {
       {showSplash && isFirstLoad && (
         <SplashScreen onComplete={handleSplashComplete} />
       )}
-      <div 
+      <div
         className={`
           transition-opacity duration-500
           ${showSplash && isFirstLoad ? "opacity-0" : "opacity-100"}

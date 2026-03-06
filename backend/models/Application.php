@@ -111,7 +111,8 @@ class Application
                 COUNT(*) AS total,
                 SUM(CASE WHEN a.status = 'pending' THEN 1 ELSE 0 END) AS pending,
                 SUM(CASE WHEN a.status = 'accepted' THEN 1 ELSE 0 END) AS accepted,
-                SUM(CASE WHEN a.status = 'rejected' THEN 1 ELSE 0 END) AS rejected
+                SUM(CASE WHEN a.status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
+                SUM(CASE WHEN a.status = 'invited' THEN 1 ELSE 0 END) AS invited
              FROM applications a
              JOIN creator_profiles cp ON a.creator_id = cp.creator_id
              WHERE cp.user_id = :uid"

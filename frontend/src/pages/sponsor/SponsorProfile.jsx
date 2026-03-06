@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { ToastContainer, useToast } from "../../components/Toast";
 import api from "../../api";
-import { AlertTriangle, Check, Factory, MapPin, Megaphone, Pencil, Save, FileText, ClipboardList, DollarSign, Smartphone, Target, Youtube, Camera, Twitter, Briefcase, Sparkles, Search, BarChart3, Lightbulb, Coins, X } from "lucide-react";
+import { AlertTriangle, Check, Factory, MapPin, Megaphone, Pencil, Save, FileText, ClipboardList, DollarSign, Smartphone, Target, Youtube, Camera, Twitter, Briefcase, BriefcaseBusiness, Sparkles, Search, BarChart3, Lightbulb, Coins, X, Monitor, LayoutDashboard } from "lucide-react";
 
 export default function SponsorProfile() {
   const [searchParams] = useSearchParams();
