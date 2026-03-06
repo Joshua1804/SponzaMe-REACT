@@ -12,6 +12,9 @@ define('CORS_ORIGIN', 'http://localhost:5173'); // Vite dev server
 // Session lifetime in seconds (2 hours)
 define('SESSION_LIFETIME', 7200);
 
+// ── SMTP / Email ──
+define('SMTP_USER', 'meerashahi.2158@gmail.com');
+define('SMTP_PASS', 'seez tewa zlfi aswf');
 // ── Razorpay Test API Keys ──
 define('RAZORPAY_KEY_ID', 'rzp_test_tE68eAnDfgRwJD');       // Replace with your Razorpay test key_id
 define('RAZORPAY_KEY_SECRET', '3LSCzazqKtsaGjHxhbf4A85U'); // Replace with your Razorpay test key_secret

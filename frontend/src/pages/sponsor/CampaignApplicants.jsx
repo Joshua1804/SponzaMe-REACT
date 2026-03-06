@@ -192,8 +192,8 @@ export default function CampaignApplicants() {
 
               <span
                 className={`inline-block px-4 py-2 rounded-full text-sm font-semibold capitalize ${isCampaignClosed
-                    ? "bg-red-100 text-red-700"
-                    : "bg-emerald-100 text-emerald-700"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-emerald-100 text-emerald-700"
                   }`}
               >
                 {campaignStatus}
@@ -416,9 +416,9 @@ export default function CampaignApplicants() {
                       {app.followers && (
                         <div className="text-center px-3">
                           <p className="text-lg font-bold text-[#5157a1]">
-                            {Number(
-                              app.followers
-                            ).toLocaleString()}
+                            {isNaN(Number(app.followers))
+                              ? app.followers
+                              : Number(app.followers).toLocaleString()}
                           </p>
                           <p className="text-[10px] text-gray-400 uppercase tracking-wide">
                             Followers
@@ -528,8 +528,8 @@ export default function CampaignApplicants() {
         }
         message={
           confirmModal.action === "accepted"
-            ? "The creator will be notified that they've been accepted for this campaign."
-            : "The creator will be notified that they were not selected for this campaign."
+            ? "The creator will be accepted for this campaign."
+            : "The creator will be rejected for this campaign."
         }
         confirmText={
           confirmModal.action === "accepted" ? "Yes, Accept" : "Yes, Reject"

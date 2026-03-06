@@ -79,7 +79,7 @@ class Application
     {
         $db = getDB();
         $stmt = $db->prepare(
-            "SELECT a.*, u.name AS creator_name, u.user_id AS creator_user_id, cp.followers, cp.platforms, cp.niche
+            "SELECT a.*, u.user_id AS creator_user_id, u.name AS creator_name, cp.followers, cp.platforms, cp.niche
              FROM applications a
              JOIN creator_profiles cp ON a.creator_id = cp.creator_id
              JOIN users u ON cp.user_id = u.user_id
