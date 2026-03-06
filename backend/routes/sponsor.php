@@ -69,6 +69,11 @@ function handleSponsorRoutes(string $method, string $action, ?int $id = null, ?s
                 SponsorController::applicants($id);
                 return;
             }
+            // GET /api/sponsor/campaign/{id}/recommendations
+            if ($id !== null && $subAction === 'recommendations' && $method === 'GET') {
+                SponsorController::recommendCreators($id);
+                return;
+            }
             break;
 
         case 'application':

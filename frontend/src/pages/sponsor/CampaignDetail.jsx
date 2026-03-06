@@ -5,7 +5,7 @@ import Footer from "../../components/Footer";
 import ConfirmModal from "../../components/ConfirmModal";
 import { ToastContainer, useToast } from "../../components/Toast";
 import api from "../../api";
-import { ClipboardList, Pencil, Trash2, AlertTriangle, DollarSign, Target, CalendarDays, Coins, Smartphone, FileText, Package, Users, Search, Lock, Save } from "lucide-react";
+import { ClipboardList, Pencil, Trash2, AlertTriangle, DollarSign, Target, CalendarDays, Coins, Smartphone, FileText, Package, Users, Search, Lock, Save, Sparkles, MapPin, Star, ChevronRight } from "lucide-react";
 
 const PLATFORMS = [
   "Instagram",
@@ -46,6 +46,11 @@ export default function CampaignDetail() {
   /* Delete modal */
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  /* ML Recommendations */
+  const [recommendations, setRecommendations] = useState(null);
+  const [recLoading, setRecLoading] = useState(false);
+  const [recError, setRecError] = useState("");
 
   /* Page title */
   useEffect(() => {
@@ -159,8 +164,36 @@ export default function CampaignDetail() {
       });
   };
 
+  /* Fetch ML recommendations */
+  const fetchRecommendations = () => {
+    setRecLoading(true);
+    setRecError("");
+    setRecommendations(null);
+    api
+      .get(`/sponsor/campaign/${id}/recommendations`)
+      .then((res) => setRecommendations(res.data.recommendations || []))
+      .catch((err) =>
+        setRecError(
+          err.response?.data?.error || "Failed to get recommendations."
+        )
+      )
+      .finally(() => setRecLoading(false));
+  };
+
   /* Helpers */
   const isClosed = campaign?.status === "closed";
+
+  const scoreBadgeColor = (score) => {
+    if (score >= 75) return "from-emerald-400 to-emerald-600";
+    if (score >= 50) return "from-amber-400 to-amber-500";
+    return "from-red-400 to-red-500";
+  };
+
+  const scoreBgColor = (score) => {
+    if (score >= 75) return "bg-emerald-50 border-emerald-200";
+    if (score >= 50) return "bg-amber-50 border-amber-200";
+    return "bg-red-50 border-red-200";
+  };
 
   const statusBadge = (status) => {
     const s = status?.toLowerCase();
@@ -401,6 +434,166 @@ export default function CampaignDetail() {
               </div>
             </div>
 
+            {/* ── AI-Powered Creator Recommendations ── */}
+            <div className="reveal bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              {/* Header */}
+              <div className="p-6 pb-4 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-200">
+                      <Sparkles size={18} className="text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#393873] text-lg">AI Recommended Creators</h3>
+                      <p className="text-xs text-gray-400">ML-powered matching based on niche, location, platforms & reach</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={fetchRecommendations}
+                    disabled={recLoading}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold text-sm shadow-lg shadow-violet-200 hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {recLoading ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Analyzing…
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={14} />
+                        {recommendations ? "Refresh" : "Find Best Creators"}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                {/* Initial state */}
+                {!recommendations && !recLoading && !recError && (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 mx-auto rounded-2xl bg-violet-50 flex items-center justify-center mb-4">
+                      <Sparkles size={28} className="text-violet-400" />
+                    </div>
+                    <p className="text-gray-500 text-sm">Click <strong>"Find Best Creators"</strong> to discover the top 3 creators that best match this campaign.</p>
+                  </div>
+                )}
+
+                {/* Loading */}
+                {recLoading && (
+                  <div className="text-center py-10">
+                    <div className="relative w-16 h-16 mx-auto mb-4">
+                      <div className="absolute inset-0 border-4 border-violet-100 rounded-full" />
+                      <div className="absolute inset-0 border-4 border-transparent border-t-violet-500 rounded-full animate-spin" />
+                      <div className="absolute inset-2 border-4 border-transparent border-t-purple-400 rounded-full animate-spin" style={{ animationDirection: "reverse", animationDuration: "0.8s" }} />
+                    </div>
+                    <p className="text-gray-500 text-sm font-medium">Analyzing creators with ML…</p>
+                    <p className="text-gray-400 text-xs mt-1">Matching niche, location, platforms & follower reach</p>
+                  </div>
+                )}
+
+                {/* Error */}
+                {recError && (
+                  <div className="text-center py-8">
+                    <div className="w-14 h-14 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-3">
+                      <AlertTriangle size={24} className="text-red-400" />
+                    </div>
+                    <p className="text-red-500 text-sm font-medium mb-1">{recError}</p>
+                    <p className="text-gray-400 text-xs">Make sure the recommendation service is running.</p>
+                  </div>
+                )}
+
+                {/* Results */}
+                {recommendations && recommendations.length > 0 && (
+                  <div className="space-y-4">
+                    {recommendations.map((rec, idx) => (
+                      <div
+                        key={rec.user_id || idx}
+                        className={`relative rounded-2xl border p-5 transition-all hover:shadow-md ${scoreBgColor(rec.match_score)}`}
+                        style={{ animationDelay: `${idx * 120}ms` }}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                          {/* Rank badge */}
+                          <div className="flex-shrink-0">
+                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${scoreBadgeColor(rec.match_score)} flex flex-col items-center justify-center shadow-lg text-white`}>
+                              <span className="text-lg font-extrabold leading-none">{rec.match_score}%</span>
+                              <span className="text-[9px] font-medium opacity-80 uppercase tracking-wider">match</span>
+                            </div>
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-bold text-white bg-[#393873] px-2 py-0.5 rounded-md">#{idx + 1}</span>
+                              <h4 className="font-bold text-[#393873] text-base truncate">{rec.name}</h4>
+                            </div>
+
+                            {/* Tags row */}
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                              {rec.niche && rec.niche !== "—" && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 text-xs font-medium text-[#5157a1] border border-[#5157a1]/10">
+                                  <Target size={11} /> {rec.niche}
+                                </span>
+                              )}
+                              {rec.location && rec.location !== "—" && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 text-xs font-medium text-gray-600 border border-gray-200">
+                                  <MapPin size={11} /> {rec.location}
+                                </span>
+                              )}
+                              {rec.followers && rec.followers !== "0" && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 text-xs font-medium text-gray-600 border border-gray-200">
+                                  <Users size={11} /> {rec.followers} followers
+                                </span>
+                              )}
+                              {rec.platforms && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 text-xs font-medium text-gray-600 border border-gray-200">
+                                  <Smartphone size={11} /> {rec.platforms}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Reasoning */}
+                            {rec.reasons && rec.reasons.length > 0 && (
+                              <div className="space-y-1">
+                                {rec.reasons.map((reason, ri) => (
+                                  <div key={ri} className="flex items-start gap-2 text-xs text-gray-600">
+                                    <Star size={10} className="flex-shrink-0 mt-0.5 text-amber-400 fill-amber-400" />
+                                    <span>{reason}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Action */}
+                          <div className="flex-shrink-0 self-center">
+                            <Link
+                              to={`/sponsor/creator/${rec.user_id}`}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#393873] text-white text-xs font-semibold hover:bg-[#5157a1] hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                            >
+                              View Profile <ChevronRight size={12} />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Empty results */}
+                {recommendations && recommendations.length === 0 && (
+                  <div className="text-center py-8">
+                    <div className="w-14 h-14 mx-auto rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
+                      <Users size={24} className="text-gray-300" />
+                    </div>
+                    <p className="text-gray-500 text-sm">No creators found for matching.</p>
+                    <p className="text-gray-400 text-xs">Try adding more creators to the platform first.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Meta info */}
             <div className="text-center text-xs text-gray-400 py-4">
               Campaign #{campaign.campaign_id} · Created{" "}
@@ -450,8 +643,8 @@ export default function CampaignDetail() {
                   />
                   <p
                     className={`text-xs mt-1 text-right ${form.description.length >= 500
-                        ? "text-red-500 font-medium"
-                        : "text-gray-400"
+                      ? "text-red-500 font-medium"
+                      : "text-gray-400"
                       }`}
                   >
                     {form.description.length}/500

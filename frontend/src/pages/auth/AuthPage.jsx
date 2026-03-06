@@ -271,7 +271,7 @@ export default function AuthPage() {
                   <div className="auth-field">
                     <div className="auth-label-row">
                       <label htmlFor="login-password">Password</label>
-                      <a className="auth-forgot" href="#forgot">Forgot?</a>
+                      {/* <a className="auth-forgot" href="#forgot">Forgot?</a> */}
                     </div>
                     <input
                       id="login-password" type="password" placeholder="••••••••"
