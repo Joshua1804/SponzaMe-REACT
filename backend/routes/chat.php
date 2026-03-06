@@ -31,7 +31,7 @@ function handleChatRoutes(string $method): void
     }
 
     // ── Build Gemini request ──
-    $apiKey = 'AIzaSyADa3tH9IQ-W0_H4c9YoGEN2JhCCEZLvjc';
+    $apiKey = GEMINI_API_KEY;
     $model  = 'gemini-2.5-flash';
     $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 

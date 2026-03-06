@@ -16,6 +16,9 @@ define('SESSION_LIFETIME', 7200);
 define('RAZORPAY_KEY_ID', 'rzp_test_tE68eAnDfgRwJD');       // Replace with your Razorpay test key_id
 define('RAZORPAY_KEY_SECRET', '3LSCzazqKtsaGjHxhbf4A85U'); // Replace with your Razorpay test key_secret
 
+// ── Gemini AI API Key ──
+define('GEMINI_API_KEY', '');
+
 // ── Email / SMTP Configuration (Gmail App Password) ──
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
