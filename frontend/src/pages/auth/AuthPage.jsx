@@ -271,7 +271,7 @@ export default function AuthPage() {
                   <div className="auth-field">
                     <div className="auth-label-row">
                       <label htmlFor="login-password">Password</label>
-                      <a className="auth-forgot" href="#forgot">Forgot?</a>
+                      {/* <a className="auth-forgot" href="#forgot">Forgot?</a> */}
                     </div>
                     <input
                       id="login-password" type="password" placeholder="••••••••"
@@ -303,7 +303,7 @@ export default function AuthPage() {
                 <h2>Create Account</h2>
                 <p className="auth-sub">Start your journey with SponzaMe</p>
 
-                <div className="auth-socials">
+                {/* <div className="auth-socials">
                   <button className="auth-social-btn" type="button" aria-label="Sign up with Google">
                     <FcGoogle /> Google
                   </button>
@@ -312,7 +312,7 @@ export default function AuthPage() {
                   </button>
                 </div>
 
-                <div className="auth-or"><span>or</span></div>
+                <div className="auth-or"><span>or</span></div> */}
 
                 {isSignUp && error && (
                   <div className="auth-error">{error}</div>
