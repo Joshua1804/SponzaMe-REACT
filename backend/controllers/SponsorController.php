@@ -440,4 +440,66 @@ class SponsorController
         Campaign::delete($id);
         echo json_encode(['message' => 'Campaign deleted.']);
     }
+
+    /**
+     * GET /api/sponsor/campaign/{id}/recommendations
+     * Calls the Python ML service to get the top 3 creator recommendations.
+     */
+    public static function recommendCreators(int $campaignId): void
+    {
+        // Verify ownership
+        $campaign = self::ownedCampaign($campaignId);
+        if (!$campaign) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Campaign not found.']);
+            return;
+        }
+
+        // Also include sponsor location from profile
+        $sponsorProfile = User::getSponsorProfile($_SESSION['user_id']);
+        if ($sponsorProfile && !empty($sponsorProfile['location']) && empty($campaign['location'])) {
+            $campaign['location'] = $sponsorProfile['location'];
+        }
+
+        // Get all active creators
+        $creators = User::getAllCreators();
+
+        if (empty($creators)) {
+            echo json_encode(['recommendations' => []]);
+            return;
+        }
+
+        // Call Python ML service
+        $payload = json_encode([
+            'campaign' => $campaign,
+            'creators' => $creators,
+        ]);
+
+        $ch = curl_init('http://127.0.0.1:5001/recommend');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => 5,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false || $httpCode !== 200) {
+            http_response_code(502);
+            echo json_encode([
+                'error' => 'Recommendation service unavailable.',
+                'detail' => $curlError ?: "HTTP $httpCode",
+            ]);
+            return;
+        }
+
+        $result = json_decode($response, true);
+        echo json_encode($result);
+    }
 }
